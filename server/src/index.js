@@ -24,7 +24,7 @@ app.use(cors({
     credentials: true,
     /////origin: "http://192.168.43.137:3000",
     //// origin: "http://localhost:3000",
-    origin: "http://localhost:3000",
+    origin: "http://52.90.83.210:3000",
 }));
 app.use(express.json({ limit: "400mb" }));
 app.use(express.urlencoded({ limit: "400mb" }));

@@ -12,7 +12,7 @@ app.use(
     credentials: true,
     /////origin: "http://192.168.43.137:3000",
     //// origin: "http://localhost:3000",
-    origin: "http://localhost:3000",
+    origin: "http://52.90.83.210:3000",
   })
 );
 
