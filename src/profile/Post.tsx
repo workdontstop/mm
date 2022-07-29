@@ -19,6 +19,12 @@ import CircleIcon from "@mui/icons-material/Circle";
 import { RootStateOrAny, useSelector, useDispatch } from "react-redux";
 import { matchMobile, matchPc, matchTablet } from "../DetectDevice";
 import { Slider } from "./Slider";
+ import { useInView } from 'react-intersection-observer';
+
+ 
+
+  
+
 
 function Postx({
   pey,
@@ -41,7 +47,89 @@ function Postx({
   AUTOSlideLongImages,
   postDivRef,
   onLoadDataOnce,
+  postDatainnerThumb,
+     setcountAutoplay,
+   countAutoplay,
+    second,
+                  setsecond,
+                   secondgo,
+                  setsecondgo,
+                  scrollToPost
 }: any) {
+
+
+    const { REACT_APP_APPX_STATE } = process.env;
+
+    var allow4dev = "";
+
+  if (REACT_APP_APPX_STATE === "dev") {
+    allow4dev = "http://localhost:1000";
+  } else {
+    allow4dev = "";
+  }
+
+
+
+  
+ const Timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+ const Timer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
+     
+
+
+  const { ref, inView, entry } = useInView({
+    /* Optional options */
+    threshold: 0.95,
+  });
+
+
+  const startinview = useCallback(() => {
+ if (inView) {
+         if (Timer.current) {clearTimeout(Timer.current);}
+            
+         if(countAutoplay === 0){ setcountAutoplay(1);  }
+      
+
+       Timer.current = setTimeout(function () {
+       
+    
+         if(countAutoplay === 1){ if(post.post_count === 1){}else{ setsecond(pey);}  }else{ 
+          
+          if(post.post_count === 1){}else{startSlider(0);}   }
+        
+      
+
+      },3000)
+       }else{
+          if (Timer.current) {clearTimeout(Timer.current);}
+           if(countAutoplay !== 0){ setcountAutoplay(0);  }
+           if(secondgo){  setsecondgo(false)}
+           if(second !== 0){  setsecond(0)}
+         
+          if(post.post_count === 1){ }else{stopSlider(0);}
+        
+       }
+
+  }, [countAutoplay,inView]);
+
+
+  
+useEffect(() => {
+ 
+  startinview();
+  }, [inView]);
+
+
+
+useEffect(() => {
+  if(secondgo){
+    if(second === pey){  setsecondgo(false); startSlider(0);   }
+     }else{}
+  }, [secondgo]);
+
+
+
+
+  
   const [autoSlideDuration] = useState(6000);
 
   const dispatch = useDispatch();
@@ -51,6 +139,9 @@ function Postx({
   const [LImiter, setLImiter] = useState<boolean>(false);
 
   var emoOpacity = 0.25;
+
+
+    
 
   useEffect(() => {
     if (onLoadDataOnce[pey]) {
@@ -109,7 +200,11 @@ function Postx({
   const showcaptionwaitTimer = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
-  const [showSliderLoader, setshowSliderLoader] = useState(true);
+  const [showSliderLoader, setshowSliderLoader] = useState(false);
+
+  const [showSliderLoaderxx, setshowSliderLoaderxx] = useState(false);
+
+  
 
   const autoPlayTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -138,22 +233,75 @@ function Postx({
     newArrxq[pey] = true;
     setActiveAutoPlay(newArrxq);
     ////////////////////////////
+     setshowSliderLoaderxx(false);
     setshowSliderLoader(true);
+
+ 
     if (autoPlayTimer.current) {
       clearInterval(autoPlayTimer.current);
     }
   };
 
+
+
+const autoPlaysec = useCallback(() => {
+  
+   
+      if(sliderIndex ===  0 && showSliderLoaderxx && countAutoplay === 1){ 
+        
+        setTimeout(function () { 
+
+   if(countAutoplay === 1 && second !== 0){ stopSlider(0);  
+    
+     if (Timer2.current) {clearTimeout(Timer2.current);}
+    
+
+       Timer2.current = setTimeout(function () { setcountAutoplay(0);  setsecondgo(true) },500)
+       
+    
+    }
+      
+
+     },2000)}
+  }, [showSliderLoaderxx,countAutoplay,sliderIndex]);
+
+
+
+
+
+
+
+
+  useEffect(() => {
+
+autoPlaysec();
+  }, [sliderIndex]);
+
+
+
+
   ///
   ///
   ///
   /// SHOW  LOGIN PASSWORD FOR A WHILE
-  const startSlider = useCallback(() => {
-    flashBlackAndWhite();
+ const startSlider = useCallback((ty:number) => {
+    var  peyx:number;
+    
+
+
+    
+     if(ty === 1){  peyx =pey + 1;  }else{ peyx =pey;}
+
+     if (itemCLICKED[peyx]) { }
+     else { 
+    
+
+      flashBlackAndWhite();
     //////the callback is passed the element, the index, and the array itself.
     ActiveAutoPlay.forEach(function (part: any, index: any, theArray: any) {
-      if (pey === index) {
+      if (peyx === index) {
         theArray[index] = false;
+        setshowSliderLoaderxx(true);
       } else {
         theArray[index] = true;
       }
@@ -164,36 +312,51 @@ function Postx({
 
     ///////////////////////////////
     const newArrxq = [...ActiveAutoPlay];
-    newArrxq[pey] = false;
+    newArrxq[peyx] = false;
     setActiveAutoPlay(newArrxq);
     ////////////////////////////
     setshowSliderLoader(false);
     autoPlayTimer.current = setInterval(function () {
-      AUTOSlideLongImages(pey);
+    
+
+       if (ActiveAutoPlay[peyx]) {
+         AUTOSlideLongImages(peyx);
+      } else {}
+
+    
       setshowSliderLoader(true);
 
-      setSliderIndex((state) => (state + 1) % postDatainner[pey].length);
+      setSliderIndex((state) => (state + 1) % postDatainner[peyx].length);
       if (waitChangeIndexTimer2.current) {
         clearTimeout(waitChangeIndexTimer2.current);
       }
       waitChangeIndexTimer2.current = setTimeout(function () {
-        setSliderIndexSlow((state) => (state + 1) % postDatainner[pey].length);
+        setSliderIndexSlow((state) => (state + 1) % postDatainner[peyx].length);
         setshowSliderLoader(false);
+
       }, 500);
-    }, autoSlideDuration);
-  }, [ActiveAutoPlay[pey], ActiveAutoPlay]);
+
+     
+    }, autoSlideDuration);}
+   
+  }, [ActiveAutoPlay,]);
+
+
+
+
 
   const SliderAutoPlay = (type: number) => {
     if (type === 1) {
-      startSlider();
+      startSlider(0);
     } else {
       if (ActiveAutoPlay[pey]) {
-        startSlider();
+        startSlider(0);
       } else {
         stopSlider(1);
       }
     }
   };
+
 
   ///
   ///
@@ -201,12 +364,12 @@ function Postx({
   /// CHANGE SLIDER CONTENT USING  DOTS
   const checkifClicked = () => {
     if (itemCLICKED[pey]) {
-      if (ActiveAutoPlay[pey]) {
         onPostsItemClicked(pey);
-      } else {
-        SliderAutoPlay(0);
-      }
     } else {
+        if (ActiveAutoPlay[pey]) {
+      } else {
+      stopSlider(0);
+      }
       onPostsItemClicked(pey);
     }
   };
@@ -215,16 +378,7 @@ function Postx({
   ///
   ///
   /// CHANGE SLIDER CONTENT USING  DOTS
-  const checkifClickedDouble = () => {
-    if (itemCLICKED[pey]) {
-      if (showcaptionwaitTimer.current) {
-        clearTimeout(showcaptionwaitTimer.current);
-      }
-
-      SliderAutoPlay(0);
-    } else {
-    }
-  };
+  const checkifClickedDouble = () => {};
 
   ///
   ///
@@ -325,7 +479,7 @@ function Postx({
   var dotspace = matchPc ? "1.7vw" : matchTablet ? "1.9vh" : "1.9vh";
   var dotspace2 = matchPc ? "0.9vw" : matchTablet ? "1.9vh" : "1.9vh";
 
-  var posttopicfont = matchPc ? "1.05vw" : matchTablet ? "1.8vh" : "1.6vh";
+  var posttopicfont = matchPc ? "1.08vw" : matchTablet ? "1.8vh" : "1.6vh";
 
   var postcaptiontop = matchPc ? "-1.85vh" : matchTablet ? "-9.2vh" : "-9.6vh";
   var postcaptionfont = matchPc ? "1.2vw" : matchTablet ? "2.35vh" : "1.82vh";
@@ -362,7 +516,7 @@ function Postx({
 
   return (
     <>
-      <animated.div style={animationmenu}>
+      <animated.div  ref={ref} style={animationmenu}>
         <div
           ref={addpostDivRef}
           style={{
@@ -384,12 +538,14 @@ function Postx({
             onPostsItemload={onPostsItemload}
             post={post}
             slides={postDatainner[pey]}
+            slidesThumb={postDatainnerThumb[pey]}
             itemcroptype={itemcroptype}
             itemFinalPostHeight={itemFinalPostHeight}
             itemCLICKED={itemCLICKED}
             itemOriginalPostHeight={itemOriginalPostHeight}
             AUTOSlideLongImages={AUTOSlideLongImages}
             clickslider={clickslider}
+            startSlider={startSlider}
             stopSlider={stopSlider}
             SliderAutoPlay={SliderAutoPlay}
             showSliderLoader={showSliderLoader}
@@ -420,50 +576,9 @@ function Postx({
                   borderBottomRightRadius: "0px",
                 }}
               >
-                {/*///////////////////////////////////////////////////////////////////////////COMMENT*/}
-                <div
-                  className={
-                    darkmodeReducer
-                      ? "zuperxyinfoPostDark"
-                      : "zuperxyinfoPostLight"
-                  }
-                  style={{
-                    top: `-${postcommenttop}px`,
-                    position: "relative",
-                    transition: "all 350ms ease",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "left",
-                    zIndex: 2,
-                    height: "0px",
-                    width: postcommentwidth,
-                    paddingLeft: "2vw",
-                    fontWeight: "bolder",
-                    opacity: darkmodeReducer ? 0.5 : 0.65,
-                  }}
-                >
-                  {" "}
-                  <span
-                    style={{
-                      marginLeft: matchPc ? "-1%" : matchTablet ? "2%" : "0.6%",
-                      verticalAlign: "middle",
-                    }}
-                  ></span>
-                </div>
-                {/*///////////////////////////////////////////////////////////////////////////COMMENT*/}
+            
 
-                <Grid
-                  item
-                  xs={12}
-                  style={{
-                    position: "absolute",
-                    top: `-20vh`,
-                    width: matchPc ? "13%" : matchTablet ? "14%" : "22%",
-                    height: matchPc ? "160px" : matchTablet ? "150px" : "200px",
-                    marginLeft: matchPc ? "87%" : matchTablet ? "86%" : "78%",
-                    zIndex: 7,
-                  }}
-                ></Grid>
+             
                 {/*///////////////////////////////////////////////////// opacity: 0.6,//////////////////////EMOTIONS*/}
 
                 <Grid
@@ -657,7 +772,7 @@ function Postx({
                   onClick={clickslider}
                   style={{
                     opacity: darkmodeReducer ? 0.89 : 0.94,
-                    cursor: "copy",
+                    cursor: "pointer",
                     top: `-1vh`,
                     position: "absolute",
                     zIndex: 6,
@@ -689,11 +804,11 @@ function Postx({
                   }}
                 >
                   <img
-                    className={darkmodeReducer ? "turpostDark" : "turpostLight"}
-                    src={`./images/profile/${post.profile_image}`}
+                    className={darkmodeReducer ? "turpostDark" : "turpostLight"} 
+                    src={`${post.profile_image}`}
                     alt="a superstarz post "
                     style={{
-                      cursor: "pointer",
+                     
                       boxShadow: darkmodeReducer
                         ? "0 0 1px #555555"
                         : "0 0 3.5px #aaaaaa",
@@ -759,7 +874,7 @@ function Postx({
                           className="zuperkingIconPostLight"
                           style={{
                             fontSize: postcirclefont,
-                            color: "pink",
+                            color:post.color1,
                           }}
                         />
                       ) : itemcroptype[pey] === 2 ? (
@@ -767,7 +882,7 @@ function Postx({
                           className="zuperkingIconPostLight"
                           style={{
                             fontSize: postcirclefont,
-                            color: "blue",
+                            color:post.color1,
                           }}
                         />
                       ) : (
@@ -775,7 +890,7 @@ function Postx({
                           className="zuperkingIconPostLight"
                           style={{
                             fontSize: postcirclefont,
-                            color: "yellow",
+                            color:post.color1,
                           }}
                         />
                       )}

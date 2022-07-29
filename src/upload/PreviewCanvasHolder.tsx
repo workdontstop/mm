@@ -181,19 +181,41 @@ function PreviewCanvasHolderx({
           ) : (
             <>
               {" "}
-              <div
-                style={{
-                  overflowX: "hidden",
-                  zIndex: 2,
-                  position: activatecropImageReducer ? "fixed" : "relative",
-                  top: activatecropImageReducer ? "-800vh" : "0px",
-                  padding: "0px",
-                }}
-              >
-                {selectedImage.map((photo: any, index: any) => {
-                  return (
-                    <div key={index} style={{ padding: "0px" }}>
-                      <PreviewCanvasCropAll
+            
+            
+
+       <Grid container style={{ padding: "0px" }}>
+        <Grid
+          item
+          xs={12}
+          style={{
+            padding: "0px",
+            marginTop: activatecropImage
+              ? "0px"
+              : matchMobile
+              ? "2.5vh"
+              : "1.5vh",
+          }}
+        >
+         
+            <>
+           
+                  {selectedImage.length > 0 ? (
+                    <Masonry
+                      columns={matchPc ? (selectedImage.length > 2 ? 3 : 2) : 2}
+                      spacing={0}
+                      style={{
+                        overflowX: "hidden",
+                        position: "relative",
+                        zIndex: 2,
+                        padding: "0px",
+                      }}
+                    >
+                      {selectedImage.length > 0
+                        ? selectedImage.map((photo: any, index: any) => {
+                            return (
+                              <div key={index} style={{ padding: "0px" }}>
+                       <PreviewCanvasCropAll
                         setwaitcropall={setwaitcropall}
                         waitcropall={waitcropall}
                         zoom={zoom}
@@ -230,10 +252,30 @@ function PreviewCanvasHolderx({
                         addUploadItemsRefSD={addUploadItemsRefSD}
                         type={1}
                       />
-                    </div>
-                  );
-                })}{" "}
-              </div>
+                              </div>
+                            );
+                          })
+                        : null}
+                    </Masonry>
+                  ) : null}
+               
+            </>
+          
+        </Grid>
+        
+      </Grid>
+
+
+
+
+
+
+
+
+
+
+         
+             
             </>
           )
         ) : null}

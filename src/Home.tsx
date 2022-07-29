@@ -17,6 +17,7 @@ import { CommentTemplate } from "./CommentTemplate";
 import { matchPc, matchTablet, matchMobile } from "./DetectDevice";
 import { RootStateOrAny, useSelector, useDispatch } from "react-redux";
 import { DarkmodeAction, screenHeightAction } from "./GlobalActions";
+import { UpdateColorAction } from "./GlobalActions";
 
 function Home(): JSX.Element {
   const dispatch = useDispatch();
@@ -182,6 +183,13 @@ function Home(): JSX.Element {
     if (themelocaldata !== null) {
       dispatch(DarkmodeAction(themelocaldata));
     }
+
+      var colorboy = {
+                color1: "#34a1eb",
+                color2: "#34a1eb",
+                colortype: 0,
+              };
+              dispatch(UpdateColorAction(colorboy));
   }, [calculateScreenHeight, darkmodeReducer, dispatch]);
 
   ///

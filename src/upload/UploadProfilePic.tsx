@@ -17,6 +17,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import date from "date-and-time";
 import { UserInfoUpdatePROFILE } from "../log/actions/UserdataAction";
 import { UserInfoUpdateBILLBOARD } from "../log/actions/UserdataAction";
+import { usePalette } from "react-palette";
+import { UpdateColorAction } from "../GlobalActions";
 
 function UploadProfilePicx({
   showModalUploadProfile,
@@ -27,13 +29,6 @@ function UploadProfilePicx({
 }: any): JSX.Element {
   const cropCanvasRefx: any = useRef(null);
 
-  var quality: number = 1;
-
-  if (typex === "Profile") {
-    quality = 1.1;
-  } else {
-    quality = 1.5;
-  }
 
   const dispatch = useDispatch();
 
@@ -64,6 +59,11 @@ function UploadProfilePicx({
   const [getpreviewFixedWidth, setgetpreviewFixedWidth] = useState(0);
 
   const [screenH, setscreenH] = useState(0);
+
+ 
+
+ const { data, loading, error } = usePalette(cropimageProfile);
+
 
   const [waitONLOAD, setwaitONLOAD] = useState<boolean>(true);
 
@@ -98,9 +98,37 @@ function UploadProfilePicx({
   const [zoom, setzoom] = useState<any>(1);
 
   const [crop, setcrop] = useState<any>({ x: 0, y: 0 });
+
   const [optionscropshow, setoptionscropshow] = useState<boolean>(true);
 
   const [superLoadFadex, setsuperLoadFadex] = useState<boolean>(false);
+
+   const [s3finaldata, sets3finaldata]= useState<any>([0,0]);
+
+ var s3finaldatax = [...s3finaldata];
+
+  const [quality, setquality] = useState(1);
+ 
+  
+  const callQuality=()=>{
+    
+  if (typex === "Profile") {
+    setquality(1.1);
+  } else {
+    setquality(1.5);
+  }
+    
+    
+  }
+
+
+   useEffect(() => {
+  callQuality();
+  }, [typex]);
+
+
+
+
 
   //
   //
@@ -387,7 +415,8 @@ function UploadProfilePicx({
   /// INTERFACE/TYPES FOR SCREENHEIGHT AND DARKMODE
   interface RootUserdataReducer {
     UserdataReducer: {
-      id: number;
+      id:number;
+      username: string;
     };
   }
 
@@ -395,101 +424,169 @@ function UploadProfilePicx({
   ///
   ///
   /// GET SCREENHEIGHT FROM REDUX STORE
-  const { id } = useSelector((state: RootUserdataReducer) => ({
+  const { id, username } = useSelector((state: RootUserdataReducer) => ({
     ...state.UserdataReducer,
   }));
 
   const idReducer = id;
+   const usernameReducer =  username;
+
+  function blobToBase64(blob: any) {
+    return new Promise((resolve, _) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  }
 
   const postbillboardData = useCallback(
-    (a: any) => {
-      setsuperLoadFadex(true);
-      // Creating object of current date and time
-      // by using Date()
-      const now = new Date();
+    (hdBlob:any,thumbBlob:any,hdBase64:any) => {
+var gg="";
+      GetSecureURL(hdBlob,thumbBlob,hdBase64,true,gg); 
 
-      // Formatting the date and time
-      // by using date.format() method
-      const datevalue = date.format(now, "YYYY_MM_DD_HH_mm_ss");
-      let formData = new FormData();
-      const datev = new Date();
+    },
+    [idReducer, blobToBase64]
+  );
 
-      formData.append("id", `${idReducer}`);
 
-      formData.append("finalxxy", a, `blob${id}${datevalue}`);
 
-      Axios.post(
-        `${REACT_APP_SUPERSTARZ_URL}/billboard_upload`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-        .then((response) => {
-          if (response.data.message === "billboard image uploaded") {
+
+
+
+  const GetSecureURL=(hdBlob: any,thumbBlob:any,hdBase64: any,billboard:boolean,color:any)=>{ Axios.post(`${REACT_APP_SUPERSTARZ_URL}/get_signed_url_4upload`)
+        .then((response)=>{
+           setsuperLoadFadex(false);
+          var url = response.data.url;
+        setsuperLoadFadex(true);
+       PutImageInS3WithURL(thumbBlob,url,url.urlHD,hdBlob,hdBase64,false,billboard,color);
+        }) .catch(function (error) {
             setsuperLoadFadex(false);
-            var ffz = `blob${id}${datevalue}`;
+          alert("caption erroerrr");
+        })}
+
+
+
+
+
+
+   
+ 
+
+
+
+  
+  const PutImageInS3WithURL= useCallback(
+   (thumbBlob:any,ur:any,urlx:any,a:any,b:any,allow:boolean,billboard:boolean,color:any) => {
+  Axios.put(urlx,a).then((response) => {
+           setsuperLoadFadex(false);
+             console.log(response);
+          if (response.status === 200) {       
+
+        setsuperLoadFadex(true);
+        if(allow){
+          let imagelink =urlx.split('?')[0];
+         
+          
+
+          if(billboard){   var zzaatak = {
+            imagedata: s3finaldatax[0],
+         imagedataThumb: imagelink,
+          id: idReducer,
+        };
+          
+
+          UpdateBillboardDatabaseStatus200(zzaatak,b); }else{ 
+          
+
+              var datak = {
+            imagedata: s3finaldatax[0],
+         imagedataThumb: imagelink,
+          id: idReducer,
+        color:color.darkVibrant,
+      color2:color.darkVibrant};
+          
+          UpdateProfileDatabaseStatus200(datak,b,color); }
+   
+        }else{ 
+          
+          let imagelinkx =urlx.split('?')[0];
+             s3finaldatax[0] = imagelinkx;
+       
+        PutImageInS3WithURL(thumbBlob,ur,ur.urlThumb,thumbBlob,b,true,billboard,color);
+      
+      }} }).catch(function (error) {
+            setsuperLoadFadex(false);
+          alert("caption erroerrr");
+        });  
+    },
+    [idReducer,s3finaldatax]
+  );
+
+
+  
+
+
+      const UpdateBillboardDatabaseStatus200=(datak:any,b:any)=>{  Axios.put(
+        `${REACT_APP_SUPERSTARZ_URL}/billboard_upload_data`,
+        { values: datak }).then((response) => {
+            setsuperLoadFadex(false);
+               if (response.data.message === "billboard image uploaded") {
+            setsuperLoadFadex(false);
+           
+
             const data = {
-              billboard1: `superbillboard${ffz}.png`,
+              billboard1: b,
             };
             dispatch(UserInfoUpdateBILLBOARD(data));
             uploadClose(3);
           }
         })
         .catch(function (error) {
-          alert("caption erroerrr");
-        });
-    },
-    [idReducer]
-  );
-
-  const postProfiledata = useCallback(
-    (a: any) => {
-      setsuperLoadFadex(true);
-      // Creating object of current date and time
-      // by using Date()
-      const now = new Date();
-
-      // Formatting the date and time
-      // by using date.format() method
-      const datevalue = date.format(now, "YYYY_MM_DD_HH_mm_ss");
-      let formData = new FormData();
-      const datev = new Date();
-
-      formData.append("id", `${idReducer}`);
-
-      formData.append("finalxx", a, `blob${id}${datevalue}`);
-
-      Axios.post(
-        `${REACT_APP_SUPERSTARZ_URL}/profile_upload`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-        .then((response) => {
-          if (response.data.message === "profile image uploaded") {
             setsuperLoadFadex(false);
-            var ffz = `blob${id}${datevalue}`;
+          alert(" error");
+        });}
+
+
+        
+        
+      const UpdateProfileDatabaseStatus200=(datak:any,b:any,color:any)=>{  Axios.put(
+        `${REACT_APP_SUPERSTARZ_URL}/profile_upload_data`,
+        { values: datak }).then((response) => {
+            setsuperLoadFadex(false);
+          if (response.data.message === "profile image data updated") {
+            var colorboy = {
+                color1: color.darkVibrant,
+                color2: color.darkVibrant,
+                colortype: 0,
+              };
+             dispatch(UpdateColorAction(colorboy));
             const data = {
-              image: `superProfile${ffz}.png`,
+              image: b,
             };
             dispatch(UserInfoUpdatePROFILE(data));
-            uploadClose(3);
+            uploadClose(4);
           }
         })
         .catch(function (error) {
-          alert("caption erroerrr");
-        });
+            setsuperLoadFadex(false);
+          alert(" error");
+        });}
+
+
+
+
+  const postProfiledata = useCallback(
+    (hdBlob: any,thumbBlob: any,hdBase64: any,gg:any) => {
+    setsuperLoadFadex(true);
+GetSecureURL(hdBlob,thumbBlob,hdBase64,false,gg);     
     },
-    [idReducer]
+    [idReducer, s3finaldata,]
   );
 
-  const drawcropper = (upl: number) => {
+  
+
+
+  const drawcropper = (upl: number,gg:any) => {
     if (CropImageHolder && cropCanvasRefx.current) {
       const ctx = cropCanvasRefx.current.getContext("2d");
       var nn = myCropHeight * quality;
@@ -569,16 +666,19 @@ function UploadProfilePicx({
               draw(ctx, NewBoxRatioWidth_WIDEIMAGE, 1, 0, crop.x);
               try {
                 if (upl === 1) {
-                  var data = cropCanvasRefx.current.toDataURL();
+                var data = cropCanvasRefx.current.toDataURL("image/jpeg", 1.0);
+                   var datathumb = cropCanvasRefx.current.toDataURL("image/jpeg", 0.05);
                   const res = await fetch(data);
                   const datax = await res.blob();
-
-                  if (typex === "Profile") {
-                    postProfiledata(datax);
+                   const resdatathumb = await fetch(datathumb);
+                  const datathumbx = await resdatathumb.blob();
+                 if (typex === "Profile") {
+                     var base64String = await blobToBase64(datax);
+                    postProfiledata(datax,datathumbx,base64String,gg);
                   } else {
-                    postbillboardData(datax);
-                  }
-                }
+                    var base64String = await blobToBase64(datax);
+                    postbillboardData(datax,datathumbx,base64String);
+                  }}
               } catch {
                 console.log("upload profile pic");
               }
@@ -587,16 +687,20 @@ function UploadProfilePicx({
             requestAnimationFrame(async () => {
               draw(ctx, NewBoxRatioWidth_WIDEIMAGE, 1, crop.x, crop.y);
               try {
-                if (upl === 1) {
-                  var data = cropCanvasRefx.current.toDataURL();
+                  if (upl === 1) {
+                var data = cropCanvasRefx.current.toDataURL("image/jpeg", 1.0);
+                   var datathumb = cropCanvasRefx.current.toDataURL("image/jpeg", 0.05);
                   const res = await fetch(data);
                   const datax = await res.blob();
-                  if (typex === "Profile") {
-                    postProfiledata(datax);
+                   const resdatathumb = await fetch(datathumb);
+                  const datathumbx = await resdatathumb.blob();
+                 if (typex === "Profile") {
+                     var base64String = await blobToBase64(datax);
+                    postProfiledata(datax,datathumbx,base64String,gg);
                   } else {
-                    postbillboardData(datax);
-                  }
-                }
+                    var base64String = await blobToBase64(datax);
+                    postbillboardData(datax,datathumbx,base64String);
+                  }}
               } catch {
                 console.log("upload profile pic");
               }
@@ -608,16 +712,20 @@ function UploadProfilePicx({
               draw(ctx, NewBoxRatioWidth_LONGIMAGE, 2, 0, crop.x);
 
               try {
-                if (upl === 1) {
-                  var data = cropCanvasRefx.current.toDataURL();
+                   if (upl === 1) {
+                var data = cropCanvasRefx.current.toDataURL("image/jpeg", 1.0);
+                   var datathumb = cropCanvasRefx.current.toDataURL("image/jpeg", 0.05);
                   const res = await fetch(data);
                   const datax = await res.blob();
-                  if (typex === "Profile") {
-                    postProfiledata(datax);
+                   const resdatathumb = await fetch(datathumb);
+                  const datathumbx = await resdatathumb.blob();
+                 if (typex === "Profile") {
+                     var base64String = await blobToBase64(datax);
+                    postProfiledata(datax,datathumbx,base64String,gg);
                   } else {
-                    postbillboardData(datax);
-                  }
-                }
+                    var base64String = await blobToBase64(datax);
+                    postbillboardData(datax,datathumbx,base64String);
+                  }}
               } catch {
                 console.log("upload profile pic");
               }
@@ -628,15 +736,19 @@ function UploadProfilePicx({
 
               try {
                 if (upl === 1) {
-                  var data = cropCanvasRefx.current.toDataURL();
+                var data = cropCanvasRefx.current.toDataURL("image/jpeg", 1.0);
+                   var datathumb = cropCanvasRefx.current.toDataURL("image/jpeg", 0.05);
                   const res = await fetch(data);
                   const datax = await res.blob();
-                  if (typex === "Profile") {
-                    postProfiledata(datax);
+                   const resdatathumb = await fetch(datathumb);
+                  const datathumbx = await resdatathumb.blob();
+                 if (typex === "Profile") {
+                     var base64String = await blobToBase64(datax);
+                    postProfiledata(datax,datathumbx,base64String,gg);
                   } else {
-                    postbillboardData(datax);
-                  }
-                }
+                    var base64String = await blobToBase64(datax);
+                    postbillboardData(datax,datathumbx,base64String);
+                  }}
               } catch {
                 console.log("upload profile pic");
               }
@@ -644,43 +756,37 @@ function UploadProfilePicx({
           }
         }
 
-        cropCanvasRefx.current.style.width = `${myCropWidth / hdcanvasvalue}px`;
-        cropCanvasRefx.current.style.height = `${
-          myCropHeight / hdcanvasvalue
-        }px`;
+     
       } else {
         requestAnimationFrame(async () => {
           draw(ctx, 0, 3, 0, crop.x);
 
           try {
-            if (upl === 1) {
-              var data = cropCanvasRefx.current.toDataURL();
-              const res = await fetch(data);
-              const datax = await res.blob();
-              if (typex === "Profile") {
-                postProfiledata(datax);
-              } else {
-                postbillboardData(datax);
-              }
-            }
+              if (upl === 1) {
+                var data = cropCanvasRefx.current.toDataURL("image/jpeg", 1.0);
+                   var datathumb = cropCanvasRefx.current.toDataURL("image/jpeg", 0.05);
+                  const res = await fetch(data);
+                  const datax = await res.blob();
+                   const resdatathumb = await fetch(datathumb);
+                  const datathumbx = await resdatathumb.blob();
+                 if (typex === "Profile") {
+                     var base64String = await blobToBase64(datax);
+                    postProfiledata(datax,datathumbx,base64String,gg);
+                  } else {
+                    var base64String = await blobToBase64(datax);
+                    postbillboardData(datax,datathumbx,base64String);
+                  }}
           } catch {
             console.log("upload profile pic");
           }
         });
 
-        if (matchTabletMobile && widelongboxmobileimage) {
-          cropCanvasRefx.current.style.width = `${getCropWidthMobile}px`;
-          cropCanvasRefx.current.style.height = `${newcropCSSHeight}px`;
-        } else {
-          cropCanvasRefx.current.style.width = `${newcropCSSWidth}px`;
-          cropCanvasRefx.current.style.height = `${getCropHeightRealImageRatio}px`;
-        }
       }
     }
   };
 
   useLayoutEffect(() => {
-    drawcropper(0);
+    drawcropper(0,data);
   }, [
     CropImageHolder,
     BoxCropActivated,
@@ -690,31 +796,16 @@ function UploadProfilePicx({
     myCropHeight,
     crop,
     zoom,
+   data
   ]);
 
   const done = () => {
-    drawcropper(1);
+  
+ drawcropper(1,data);
   };
 
   return (
     <>
-      {superLoadFadex ? (
-        <>
-          <Grid
-            container
-            style={{
-              backgroundColor: darkmodeReducer
-                ? "rgba(50,50,50,0.5)"
-                : "rgba(250,250,250,0.5)",
-              position: "fixed",
-              top: "0px",
-              width: "100%",
-              height: "100%",
-              zIndex: 10,
-            }}
-          ></Grid>{" "}
-        </>
-      ) : null}
       {showModalUploadProfile ? (
         <DialogContent
           className={darkmodeReducer ? "dialog-container" : "dialog-container"}
@@ -727,6 +818,24 @@ function UploadProfilePicx({
             overflow: "hidden",
           }}
         >
+          {superLoadFadex ? (
+            <>
+              <Grid
+                container
+                style={{
+                  backgroundColor: darkmodeReducer
+                    ? "rgba(50,50,50,0.65)"
+                    : "rgba(250,250,250,0.65)",
+                  position: "fixed",
+                  top: "0px",
+                  width: "100%",
+                  height: "100%",
+                  zIndex: 10,
+                }}
+              ></Grid>{" "}
+            </>
+          ) : null}
+
           <animated.div ref={cropscrollRef} style={animation}>
             <DialogContent
               ref={cropTOPLEVELScrollRef}

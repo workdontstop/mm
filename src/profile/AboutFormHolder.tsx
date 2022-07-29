@@ -18,7 +18,7 @@ import { PasswordCheck } from "../log/PasswordCheck";
 import { UpdateColorAction } from "../GlobalActions";
 import { UserInfoUpdateAction } from "../log/actions/UserdataAction";
 
-Axios.defaults.withCredentials = true;
+///Axios.defaults.withCredentials = true;
 
 function AboutFormHolderx({
   zoomedModal,
@@ -546,9 +546,7 @@ function AboutFormHolderx({
         Axios.put(
           `${REACT_APP_SUPERSTARZ_URL}/update_basic`,
           { values: aboutboy },
-          {
-            withCredentials: true,
-          }
+          {}
         )
           .then((response) => {
             if (response.data.message === "username updated") {

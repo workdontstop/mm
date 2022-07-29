@@ -101,8 +101,8 @@ function Uploadx({
                 matchMobile || matchTablet
                   ? activatecropImageReducer
                     ? darkmodeReducer
-                      ? " dontallowhighlighting modal-containerDarkmob"
-                      : " dontallowhighlighting  modal-containerLightmob "
+                      ? " dontallowhighlighting modal-containerDark"
+                      : " dontallowhighlighting  modal-containerLight "
                     : darkmodeReducer
                     ? " dontallowhighlighting modal-containerDark"
                     : " dontallowhighlighting  modal-containerLight "

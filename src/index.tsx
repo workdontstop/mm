@@ -11,6 +11,7 @@ const redux = require("redux");
 const applyMiddleware = redux.applyMiddleware;
 const thunkMiddleware = require("redux-thunk").default;
 
+
 require("dotenv").config();
 
 declare global {

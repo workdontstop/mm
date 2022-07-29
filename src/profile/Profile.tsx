@@ -4,7 +4,7 @@ import { Billboard } from "./Billboard";
 import { Post } from "./Post";
 import { OptionsSlider } from "./OptionsSlider";
 
-import { matchPc, matchTablet } from "../DetectDevice";
+import { matchPc, matchTablet,matchMobile } from "../DetectDevice";
 import { RootStateOrAny, useSelector, useDispatch } from "react-redux";
 import {
   Paper,
@@ -18,6 +18,8 @@ import ImagePhotoSizeSelectSmall from "material-ui/svg-icons/image/photo-size-se
 import Masonry from "@mui/lab/Masonry";
 import AddIcon from "@mui/icons-material/Add";
 import { Upload } from "../upload/Upload";
+import {SnapToggleAction } from ".././GlobalActions";
+
 
 function Profilex({
   OpenModalForm,
@@ -30,17 +32,26 @@ function Profilex({
   aboutTemplateGo,
   commentTemplateGo,
   postDatainner,
+  postDatainnerThumb,
   showProfiileData,
   paperPostScrollRef,
   setx,
   x,
 }: any) {
+
+
+    const [countAutoplay, setcountAutoplay] = useState<number>(0);
+    
   const dispatch = useDispatch();
 
   const postDivRef = useRef<any>([]);
+  
 
   const postItemsRef = useRef<any>([]);
   ///
+
+   const [second, setsecond] = useState<any>(0);
+    const [secondgo, setsecondgo] = useState<boolean>(false);
 
   const [itemheight, setitemheight] = useState<Array<string>>([]);
   const [itemheighthold, setitemheighthold] = useState<Array<string>>([]);
@@ -191,7 +202,7 @@ function Profilex({
             setitemOriginalPostHeight(newArrayitemOriginalPostHeight);
             ///////////////////////////////
 
-            var choppedHeight = percentage(screenHeightReducer, 100);
+            var choppedHeight = percentage(screenHeightReducer, 102);
 
             var choppedwidth = percentage(
               screenHeightReducer,
@@ -290,6 +301,7 @@ function Profilex({
       block: "start",
     });
   };
+  
   const postitemSHOWFULLHEIGHT = (index: any, type: number) => {
     if (itemcroptype[index] === 1 || itemcroptype[index] === 2) {
       if (type === 0) {
@@ -309,7 +321,26 @@ function Profilex({
     null
   );
 
-  const AUTOSlideLongImages = (index: number) => {
+  
+
+
+   const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+  
+
+  const freesnap=()=>{
+ dispatch(SnapToggleAction(false));
+   if (snapTimer.current) {
+        clearTimeout(snapTimer.current);}
+      snapTimer.current = setTimeout(function () {
+         dispatch(SnapToggleAction(true));
+      },matchMobile ? 7000:12000);}
+
+
+
+      const AUTOSlideLongImages = (index: number) => {
+     freesnap();
     if (itemcroptype[index] === 2) {
       scrollLongPicTimerx.current = setTimeout(() => {
         if (paperPostScrollRef.current) {
@@ -330,10 +361,7 @@ function Profilex({
     }
   };
 
-  ///
-  ///
-  ///
-  /// SLIDER DISPATCH
+
 
   const onPostsItemClicked = (index: number) => {
     if (itemCLICKED[index]) {
@@ -343,6 +371,7 @@ function Profilex({
       postitemSHOWFULLHEIGHT(index, 1);
       scrollToPost(index);
     } else {
+      if(matchMobile){ freesnap();}
       AUTOSlideLongImages(index);
       if (scrollTypeTimer.current) {
         clearTimeout(scrollTypeTimer.current);
@@ -478,7 +507,7 @@ function Profilex({
   return (
     <>
       <Grid container className="dontallowhighlighting">
-        <Grid
+        <Grid 
           item
           xs={12}
           style={{
@@ -505,8 +534,13 @@ function Profilex({
                   }}
                 >
                   <Post
+                  second={second}
+                  setsecond={setsecond}
+                   secondgo={secondgo}
+                  setsecondgo={setsecondgo}
+                   setcountAutoplay={setcountAutoplay}
+                  countAutoplay={countAutoplay}
                     onLoadDataOnce={onLoadDataOnce}
-                    key={i}
                     pey={i}
                     addPostItemsRef={addPostItemsRef}
                     postDivRef={postDivRef}
@@ -522,10 +556,12 @@ function Profilex({
                     itemCLICKED={itemCLICKED}
                     addpostDivRef={addpostDivRef}
                     postDatainner={postDatainner}
+                    postDatainnerThumb={postDatainnerThumb}
                     itemOriginalPostHeight={itemOriginalPostHeight}
                     ActiveAutoPlay={ActiveAutoPlay}
                     setActiveAutoPlay={setActiveAutoPlay}
                     AUTOSlideLongImages={AUTOSlideLongImages}
+                    scrollToPost={scrollToPost}
                   />
                 </div>
               ))}

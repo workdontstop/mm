@@ -145,7 +145,7 @@ function AboutColorx({ zoomed }: any): JSX.Element {
         `${REACT_APP_SUPERSTARZ_URL}/update_color`,
         { values: colorboy },
         {
-          withCredentials: true,
+          
         }
       )
         .then((response) => {

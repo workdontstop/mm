@@ -9,6 +9,7 @@ import {
   CHANGE_OPTIONS_TOP,
   CHANGE_NAV_FILTER,
   CHANGE_NAV_CROP,
+  UPDATE_SNAP
 } from "./global_ActionTypes";
 
 ////////////OPTIONS TOP SHOW  DATA////////////////
@@ -236,8 +237,9 @@ export const GlobalReducerLoader = (
 ///
 //////GLOBAL DARKMODE HEIGHT  DATA
 const initialState = {
+  snapStart:true,
   screenHeight: 0,
-  darkmode: false,
+  darkmode: true,
   ////For example const initialState = { person: null as Person };
 };
 type MyGlobalReducer = typeof initialState;
@@ -253,6 +255,8 @@ export const GlobalReducer = (
       return { ...state, darkmode: action.payload };
     case UPDATE_DARKMODETOGGLE:
       return { ...state, darkmode: !state.darkmode };
+        case UPDATE_SNAP:
+      return { ...state, snapStart: action.payload };
     default:
       return state;
   }

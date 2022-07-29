@@ -18,6 +18,7 @@ import { PasswordCheck } from "./PasswordCheck";
 import { UpdateColorAction } from "../GlobalActions";
 
 Axios.defaults.withCredentials = true;
+/////withCredentials: true
 
 function FormHolderx({
   zoomedModal,
@@ -228,7 +229,7 @@ function FormHolderx({
         {
           values: cleanLoginValues,
         },
-        { withCredentials: true }
+        { withCredentials: true,}
       )
         .then((response) => {
           if (response.data.message === "Wrong Password") {

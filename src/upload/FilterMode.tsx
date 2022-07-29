@@ -29,7 +29,7 @@ import { convertHexToRGB } from "material-ui/utils/colorManipulator";
 import { Caption } from "./Caption";
 import date from "date-and-time";
 
-Axios.defaults.withCredentials = true;
+///Axios.defaults.withCredentials = true;
 
 function FilterModex({
   filterImage,
@@ -151,6 +151,10 @@ function FilterModex({
   const [regimageholdfilter, setregimageholdfilter] = useState<any>([]);
 
   const [finalImageData, setfinalImageData] = useState<any>([]);
+  
+  const [finalImageDataSD, setfinalImageDataSD] = useState<any>([]);
+  
+  const [finalImageDataBASE64, setfinalImageDataBASE64] = useState<any>([]);
 
   const [callfilter, setcallfilter] = useState<boolean>(false);
 
@@ -220,6 +224,8 @@ function FilterModex({
       finalImageDatax[i] = null;
       if (selectedImage.length - 1 === i) {
         setfinalImageData(finalImageDatax);
+         setfinalImageDataSD(finalImageDatax);
+          setfinalImageDataBASE64(finalImageDatax);
       }
     }
   }, [activatefilterImageReducer]);
@@ -579,6 +585,10 @@ function FilterModex({
             setstartTopicCap={setstartTopicCap}
             finalImageData={finalImageData}
             setfinalImageData={setfinalImageData}
+               finalImageDataSD={finalImageDataSD}
+            setfinalImageDataSD={setfinalImageDataSD}
+               finalImageDataBASE64={finalImageDataBASE64}
+            setfinalImageDataBASE64={setfinalImageDataBASE64}
             superzeroeffect={superzeroeffect}
             superstickerIndex={superstickerIndex}
             sethdfilter={sethdfilter}
@@ -836,6 +846,8 @@ function FilterModex({
               <Caption
                 closeUploadModal={closeUploadModal}
                 finalImageData={finalImageData}
+                  finalImageDataSD={finalImageDataSD}
+                    finalImageDataBASE64={finalImageDataBASE64}
                 selectedImage={selectedImage}
                 setstartTopicCap={setstartTopicCap}
               />

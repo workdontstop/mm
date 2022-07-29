@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback,useEffect } from "react";
 
 import { matchPc, matchTablet, matchMobile } from "../DetectDevice";
 import { useSpring, animated } from "react-spring";
@@ -54,6 +54,10 @@ function OptionsSliderx({
   superzeroeffect,
   setfinalImageData,
   finalImageData,
+   setfinalImageDataSD,
+  finalImageDataSD,
+   setfinalImageDataBASE64,
+  finalImageDataBASE64,
   setstartTopicCap,
   setShowModalUpload,
   setStopBodyScroll,
@@ -61,6 +65,8 @@ function OptionsSliderx({
   setsupeFilterLoadFade,
   setsuperSettings,
 }: any) {
+
+
   ///
   ///
   ///
@@ -146,7 +152,7 @@ function OptionsSliderx({
     "normal",
     "lift",
     "juice",
-    "kemi",
+    "zoidberg",
     "futurama",
     "tentacion",
     "floyd",
@@ -486,6 +492,12 @@ function OptionsSliderx({
     dispatch(UpdateOptionsTop(false));
   };
 
+
+     useEffect(() => {
+   if( typeUpload === 1 ){ setActiveSlide(1)}
+  }, []);
+
+  
   return (
     <>
       {typeUpload === 1 ? (
@@ -543,6 +555,10 @@ function OptionsSliderx({
           setstartTopicCap={setstartTopicCap}
           finalImageData={finalImageData}
           setfinalImageData={setfinalImageData}
+           finalImageDataSD={finalImageDataSD}
+          setfinalImageDataSD={setfinalImageDataSD}
+           finalImageDataBASE64={finalImageDataBASE64}
+          setfinalImageDataBASE64={setfinalImageDataBASE64}
           superzeroeffect={superzeroeffect}
           superstickerIndex={superstickerIndex}
           sethdfilter={sethdfilter}

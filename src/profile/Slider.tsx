@@ -7,8 +7,11 @@ import { animated, useTransition } from "react-spring";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { matchMobile, matchPc, matchTablet } from "../DetectDevice";
 
+
+
 function Sliderx({
   slides,
+  slidesThumb,
   pey,
   addPostItemsRef,
   itemheight,
@@ -19,7 +22,6 @@ function Sliderx({
   itemOriginalPostHeight,
   itemcroptype,
   itemCLICKED,
-  ActiveAutoPlay,
   setActiveAutoPlay,
   AUTOSlideLongImages,
   clickslider,
@@ -33,8 +35,25 @@ function Sliderx({
   sliderIndexSlow,
   setSliderIndexSlow,
   length,
+  startSlider,
+  ActiveAutoPlay
 }: any): JSX.Element {
   const [sliderDuration] = useState(1500);
+
+
+ 
+
+
+   var allow4dev = "";
+    const { REACT_APP_APPX_STATE } = process.env;
+
+  if (REACT_APP_APPX_STATE === "dev") {
+    allow4dev = "http://localhost:1000";
+  } else {
+    allow4dev = "";
+  }
+
+
 
   /// const getWidth = () => window.innerWidth;
   ///var newGetWidth = getWidth() * slides.length;
@@ -60,7 +79,7 @@ function Sliderx({
   ///
   ///
   ///
-  /// GET DARKMODE FROM REDUX STORE
+  /// 
   interface RootStateActiveAutoPlayReducer {
     ActiveAutoPlayReducer: {
       ActiveId: number;
@@ -71,6 +90,51 @@ function Sliderx({
   }));
 
   const ActiveIdReducer = ActiveId;
+
+
+    ///
+  ///
+  ///
+  /// GET DARKMODE FROM REDUX STORE
+  interface RootStateGlobalReducer {
+    GlobalReducer: {
+      darkmode: boolean;
+    };
+  }
+  const { darkmode } = useSelector((state: RootStateGlobalReducer) => ({
+    ...state.GlobalReducer,
+  }));
+  const darkmodeReducer = darkmode;
+
+
+  ///
+  ///
+  /// GET COLOR FROM REDUX STORE
+  interface RootStateReducerColor {
+    GlobalReducerColor: {
+      color: string;
+      colordark: string;
+      colortype: number;
+    };
+  }
+  const { color, colordark, colortype } = useSelector(
+    (state: RootStateReducerColor) => ({
+      ...state.GlobalReducerColor,
+    })
+  );
+  const colorReducer = color;
+  const colorReducerdark = colordark;
+  const colortypeReducer = colortype;
+
+
+
+   var colorx =
+    colortypeReducer === 0
+      ? darkmodeReducer
+        ? colorReducerdark
+        : colorReducer
+      : colorReducer;
+  
 
   useEffect(() => {
     if (ActiveAutoPlay[pey]) {
@@ -130,19 +194,7 @@ function Sliderx({
     }
   };
 
-  ///
-  ///
-  ///
-  /// GET DARKMODE FROM REDUX STORE
-  interface RootStateGlobalReducer {
-    GlobalReducer: {
-      darkmode: boolean;
-    };
-  }
-  const { darkmode } = useSelector((state: RootStateGlobalReducer) => ({
-    ...state.GlobalReducer,
-  }));
-  const darkmodeReducer = darkmode;
+
 
   ///
   ///
@@ -209,6 +261,7 @@ function Sliderx({
   ///
   /// NEXT SLIDE
   const nextSlide = () => {
+   
     AUTOSlideLongImages(pey);
 
     if (ActiveAutoPlay[pey]) {
@@ -303,17 +356,22 @@ function Sliderx({
               : `${sliderLoader} turlight`
           }
           style={{
-            boxShadow: `0 0 3px ${post.color}`,
-            backgroundColor: post.color,
-            height: "3px",
+            
+            backgroundColor: colorx,
+            height: "4.2px",
             position: "absolute",
             display: autoSlideDisplay,
             zIndex: 100000,
             top: "0em",
           }}
         ></Grid>
+
+        
         {slides.length > 0 ? (
           <SliderNumber
+          startSlider={startSlider}
+          ActiveAutoPlay={ActiveAutoPlay}
+          stopSlider={stopSlider}
             activeSlide={sliderIndexSlow}
             total={slides.length}
             itemCLICKED={itemCLICKED}
@@ -330,22 +388,50 @@ function Sliderx({
           itemOriginalPostHeight={itemOriginalPostHeight}
         />
         {transitions((style, i) => (
-          <>
-            <animated.img
+          <div  key={i}>
+           <animated.img
               onLoad={(e: any) => {
                 onPostsItemload(e, pey, i);
               }}
               onMouseDown={clickslider}
-              key={i}
+             
               ref={addPostItemsRef}
               className={
                 darkmodeReducer ? "turlightpostdark" : "turlightpostlight"
               }
-              src={`./images/posts/${slides[i]}`}
+              src={slidesThumb[i]}
               alt="a superstarz post "
               style={{
                 ...style,
-                cursor: "copy",
+                cursor: "pointer",
+                width: "100%",
+                height: itemheight[pey],
+                position: "absolute",
+                padding: "0px",
+                objectFit:
+                  itemcroptype[pey] === 1 || itemcroptype[pey] === 2
+                    ? "cover"
+                    : "cover",
+                objectPosition:
+                  itemcroptype[pey] === 1 || itemcroptype[pey] === 2
+                    ? "50% top"
+                    : "50% 50",
+                zIndex: 0,
+                float: "left",
+                filter: "blur(7px)"
+              }}
+            />
+            <animated.img
+              onMouseDown={clickslider}
+            
+              className={
+                darkmodeReducer ? "turlightpostdark" : "turlightpostlight"
+              }
+              src={slides[i]}
+              alt="a superstarz post "
+              style={{
+                ...style,
+                cursor: "pointer",
                 width: "100%",
                 height: itemheight[pey],
                 position: "absolute",
@@ -362,7 +448,8 @@ function Sliderx({
                 float: "left",
               }}
             />
-          </>
+
+          </div>
         ))}{" "}
         <Dots
           total={slides.length}

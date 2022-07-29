@@ -14,6 +14,7 @@ function Menux({
   OpenUploadModal,
   showModalUpload,
   HidePostDataOnScroll,
+   setsuperSettings,
 }: any) {
   ///
   ///
@@ -85,6 +86,8 @@ function Menux({
   });
 
   const jayme = useCallback(() => {
+    if(shownav){}else{setShownav(true);} 
+
     var datascroll: number = matchPc
       ? paperPostScrollRef.current.scrollTop
       : window.scrollY;
@@ -235,6 +238,7 @@ function Menux({
                     }}
                   >
                     <OptionsSlider
+                     setsuperSettings={setsuperSettings}
                       typeUpload={0}
                       showModalUpload={showModalUpload}
                       OpenUploadModal={OpenUploadModal}
@@ -263,9 +267,9 @@ function Menux({
                   item
                   component={Box}
                   display={{ xs: "none", md: "block" }}
-                  md={2}
+                  md={2} style={{ height: "0px",}}
                 ></Grid>
-                <Grid item xs={12} md={10}>
+                <Grid item xs={12} md={10}  style={{ height: "0px",}}>
                   <animated.div style={animationmenu}>
                     <span
                       onClick={(e: any) => {
@@ -290,6 +294,7 @@ function Menux({
                         verticalAlign: "middle",
                         cursor: "pointer",
                         fontWeight: "bolder",
+                         height: "0px",
                       }}
                     >
                       <span

@@ -1,15 +1,3 @@
-/*   Z Z  Z   Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z   */
-/*   zindex log  16 
-  zIndex profile  4
-
-  zIndex loader 100000
-  
-  zIndex scroller 10000
-*/
-
-/*    font-family: Arial, Helvetica, sans-serif;   */
-
-/*  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  */
 .app-little-text-typography {
   font-weight: normal;
   position: absolute;
@@ -22,9 +10,6 @@
   height: 100vh;
   text-align: center;
 }
-/*  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  A  */
-
-/*  B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B  */
 
 .Background-header-light {
   background-image: linear-gradient(
@@ -122,10 +107,6 @@
     opacity: 0.3;
   }
 }
-
-/*  B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B B  B B  */
-
-/*  C  C  C   C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C*/
 
 .center-content-vertically {
   margin: 0;
@@ -245,9 +226,7 @@
   -webkit-box-shadow: 0 0 5px, #cccccc;
   box-shadow: 0 0 5px, #cccccc;
 }
-/*  C  C  C   C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C C  C  C*/
 
-/*    D D  D    D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D   */
 .dontallowhighlighting {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -279,9 +258,6 @@
   display: flex;
 }
 
-/*    D D  D    D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D  D  D D   */
-
-/*    E E  E    E E  E    E E  E    E E  E    E E  E    E E  E    E E  E    E E  E    E E  E    E E  E    E E  E   */
 .element-bop {
   display: block;
   -webkit-animation: element-bop-keyframe 0.5s infinite; /* Safari 4+ */
@@ -324,10 +300,6 @@
   display: none;
 }
 
-/*    E E  E    E E  E    E E  E    E E  E    E E  E    E E  E    E E  E    E E  E    E E  E    E E  E    E E  E   */
-
-/*  F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F     */
-
 .fontfamilyArial {
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -368,10 +340,10 @@
 }
 
 .fadeboyxx {
-  -webkit-animation: fadeboyin-keyframexx 5s linear 1 forwards; /* Safari 4+ */
-  -moz-animation: fadeboyin-keyframexx 5s linear 1 forwards; /* Fx 5+ */
-  -o-animation: fadeboyin-keyframexx 5s linear 1 forwards; /* Opera 12+ */
-  animation: fadeboyin-keyframexx 5s linear 1 forwards; /* IE 10+, Fx 29+ */
+  -webkit-animation: fadeboyin-keyframexx 5s linear 1 forwards;
+  -moz-animation: fadeboyin-keyframexx 5s linear 1 forwards;
+  -o-animation: fadeboyin-keyframexx 5s linear 1 forwards;
+  animation: fadeboyin-keyframexx 5s linear 1 forwards;
 }
 
 @keyframes fadeboyin-keyframexx {
@@ -402,14 +374,11 @@
   }
 }
 
-/*  F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F   F F F     */
-
-/*   H H  H  H  H  H   H  H  H   H  H  H   H  H  H   H  H  H   H  H  H   H  H  H   H  H  H   H  H  H     */
 .heartbeat {
-  -webkit-animation: heartbeat-keyframe 0.5s infinite; /* Safari 4+ */
-  -moz-animation: heartbeat-keyframe 0.5s infinite; /* Fx 5+ */
-  -o-animation: heartbeat-keyframe 0.5s infinite; /* Opera 12+ */
-  animation: heartbeat-keyframe 0.5s infinite; /* IE 10+, Fx 29+ */
+  -webkit-animation: heartbeat-keyframe 0.5s infinite;
+  -moz-animation: heartbeat-keyframe 0.5s infinite;
+  -o-animation: heartbeat-keyframe 0.5s infinite;
+  animation: heartbeat-keyframe 0.5s infinite;
 }
 @keyframes heartbeat-keyframe {
   0% {
@@ -425,10 +394,6 @@
     font-size: 160%;
   }
 }
-
-/*  H  H  H    H  H  H   H  H  H   H  H  H   H  H  H   H  H  H   H  H  H   H  H  H   H  H  H   H  H  H     */
-
-/*  I  I  I   I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I */
 
 .image-out-on-click {
   object-fit: contain;
@@ -506,10 +471,6 @@
   color: #ffffff;
 }
 
-/*  I  I  I   I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I I  I  I */
-
-/*   L L  L     L L  L   L L  L   L L  L   L L  L   L L  L   L L  L   L L  L   L L  L   */
-
 .littletext-Mobile {
   font-size: 1.8vh;
   margin-left: 3.5px;
@@ -532,10 +493,6 @@
 .littletext-outter {
   height: 13vh;
 }
-
-/*   L L  L     L L  L   L L  L   L L  L   L L  L   L L  L   L L  L   L L  L   L L  L   */
-
-/*  M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M      */
 
 .make-small-icons-clickable-neutral {
   color: #999999;
@@ -629,6 +586,59 @@
   transform: scale(1.2);
 }
 
+
+.make-small-icons-clickable-lightxx {
+    cursor: pointer;
+   -webkit-filter: drop-shadow(1.2px 0.1px 1.92px (41, 53, 70, 8.35));
+  filter: drop-shadow(1.2px 0.1px 1.92px rgba(41, 53, 70, 8.35));
+  color: #000000;
+   background-color: rgba(000, 000, 005, 0.2);
+  border-radius: 25px;
+  padding: 5px;
+  transition: 140ms transform ease-in;
+  transform: scale(1.6);
+}
+
+.make-small-icons-clickable-lightxx:hover {
+  background-color: rgba(000, 000, 005, 0.2);
+  border-radius: 25px;
+  padding: 5px;
+  transition: 140ms transform ease-in;
+  transform: scale(1.9);
+}
+
+.make-small-icons-clickable-lightxx:active {
+  transition: 200ms transform ease-in;
+  transform: scale(1.2);
+}
+
+.make-small-icons-clickable-darkxx {
+    cursor: pointer;
+  -webkit-filter: drop-shadow(1.2px 0.1px 1.92px rgba(255, 255, 255, 0.4));
+  filter: drop-shadow(1.2px 0.1px 1.92px rgba(255, 255, 255, 0.4));
+  color: #ffffff;
+   background-color: rgba(225, 225, 225, 0.2);
+  border-radius: 25px;
+  padding: 5px;
+  transition: 140ms transform ease-in;
+  transform: scale(1.6);
+ 
+}
+
+.make-small-icons-clickable-darkxx:hover {
+  background-color: rgba(225, 225, 225, 0.2);
+  border-radius: 25px;
+  padding: 5px;
+  transition: 140ms transform ease-in;
+  transform: scale(1.9);
+}
+
+.make-small-icons-clickable-darkxx:active {
+  transition: 200ms transform ease-in;
+  transform: scale(1.2);
+}
+
+
 .make-small-icons-clickable-light {
   -webkit-filter: drop-shadow(1.2px 0.1px 1.92px (41, 53, 70, 8.35));
   filter: drop-shadow(1.2px 0.1px 1.92px rgba(41, 53, 70, 8.35));
@@ -699,7 +709,6 @@
   cursor: default;
 }
 
-/* Handle */
 .modalImageCustomSlider::-webkit-scrollbar-thumb {
   height: auto;
   border-radius: 1px;
@@ -813,21 +822,21 @@
   background-image: linear-gradient(
     to bottom,
     rgb(108, 112, 122, 0.97),
-    rgb(108, 112, 122, 0.99),
-    rgb(108, 112, 122, 0.98),
-    rgb(108, 112, 122, 0.955),
-    rgb(108, 112, 122, 0.935)
+    rgb(108, 112, 122, 0.97),
+    rgb(108, 112, 122, 0.96),
+    rgb(108, 112, 122, 0.935),
+    rgb(108, 112, 122, 0.925)
   );
 }
 
 .modal-containerLight {
   background-image: linear-gradient(
     to bottom,
-    rgb(219, 219, 219, 0.999),
-    rgb(219, 219, 219, 0.99),
-    rgb(219, 219, 219, 0.98),
-    rgb(219, 219, 219, 0.95),
-    rgb(219, 219, 219, 0.93)
+    rgb(219, 219, 219, 0.979),
+    rgb(219, 219, 219, 0.97),
+    rgb(219, 219, 219, 0.96),
+    rgb(219, 219, 219, 0.93),
+    rgb(219, 219, 219, 0.92)
   );
 }
 
@@ -838,10 +847,6 @@
 .modal-containerLightmob {
   background-color: rgb(219, 219, 219, 1);
 }
-
-/*  M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M   M M M      */
-
-/* P P P P P P P P PP  P P*/
 
 .post-background-dark {
   background-image: linear-gradient(
@@ -917,8 +922,6 @@
     rgb(150, 150, 150, 0)
   );
 }
-/* P P P P P P P P PP  P P*/
-/*   S S S    S S S   S S S   S S S   S S S   S S S   S S S   S S S   S S S   S S S   S S S    */
 
 .slider-arrow-backpad-leftDARK:hover {
   -webkit-filter: drop-shadow(1.2px 0.1px 1.92px rgba(005, 005, 005, 0.4));
@@ -1043,10 +1046,10 @@ zuperxyinfo {
 }
 
 .superloader {
-  -webkit-animation: superloader-keyframe 2s linear 1 forwards; /* Safari 4+ */
-  -moz-animation: superloader-keyframe 2s linear 1 forwards; /* Fx 5+ */
-  -o-animation: superloader-keyframe 2s linear 1 forwards; /* Opera 12+ */
-  animation: superloader-keyframe 2s linear 1 forwards; /* IE 10+, Fx 29+ */
+  -webkit-animation: superloader-keyframe 2s linear 1 forwards;
+  -moz-animation: superloader-keyframe 2s linear 1 forwards;
+  -o-animation: superloader-keyframe 2s linear 1 forwards;
+  animation: superloader-keyframe 2s linear 1 forwards;
 }
 
 @keyframes superloader-keyframe {
@@ -1117,10 +1120,10 @@ zuperxyinfo {
 }
 
 .superloaderAutoSlider {
-  -webkit-animation: superloader-keyframeAutoSlider 5.2s linear 1 forwards; /* Safari 4+ */
-  -moz-animation: superloader-keyframeAutoSlider 5.2s linear 1 forwards; /* Fx 5+ */
-  -o-animation: superloader-keyframeAutoSlider 5.2s linear 1 forwards; /* Opera 12+ */
-  animation: superloader-keyframeAutoSlider 5.2s linear 1 forwards; /* IE 10+, Fx 29+ */
+  -webkit-animation: superloader-keyframeAutoSlider 5.2s linear 1 forwards;
+  -moz-animation: superloader-keyframeAutoSlider 5.2s linear 1 forwards;
+  -o-animation: superloader-keyframeAutoSlider 5.2s linear 1 forwards;
+  animation: superloader-keyframeAutoSlider 5.2s linear 1 forwards;
 }
 
 @keyframes superloader-keyframeAutoSlider {
@@ -1191,10 +1194,10 @@ zuperxyinfo {
 }
 
 .superloaderHALF {
-  -webkit-animation: superloader-keyframeHALF 0.2s linear 1 forwards; /* Safari 4+ */
-  -moz-animation: superloader-keyframeHALF 0.2s linear 1 forwards; /* Fx 5+ */
-  -o-animation: superloader-keyframeHALF 0.2s linear 1 forwards; /* Opera 12+ */
-  animation: superloader-keyframeHALF 0.2s linear 1 forwards; /* IE 10+, Fx 29+ */
+  -webkit-animation: superloader-keyframeHALF 0.2s linear 1 forwards;
+  -moz-animation: superloader-keyframeHALF 0.2s linear 1 forwards;
+  -o-animation: superloader-keyframeHALF 0.2s linear 1 forwards;
+  animation: superloader-keyframeHALF 0.2s linear 1 forwards;
 }
 
 @keyframes superloader-keyframeHALF {
@@ -1212,10 +1215,10 @@ zuperxyinfo {
 }
 
 .superloaderQUATER {
-  -webkit-animation: superloader-keyframeQUATER 0.2s linear 1 forwards; /* Safari 4+ */
-  -moz-animation: superloader-keyframeQUATER 0.2s linear 1 forwards; /* Fx 5+ */
-  -o-animation: superloader-keyframeQUATER 0.2s linear 1 forwards; /* Opera 12+ */
-  animation: superloader-keyframeQUATER 0.2s linear 1 forwards; /* IE 10+, Fx 29+ */
+  -webkit-animation: superloader-keyframeQUATER 0.2s linear 1 forwards;
+  -moz-animation: superloader-keyframeQUATER 0.2s linear 1 forwards;
+  -o-animation: superloader-keyframeQUATER 0.2s linear 1 forwards;
+  animation: superloader-keyframeQUATER 0.2s linear 1 forwards;
 }
 
 @keyframes superloader-keyframeQUATER {
@@ -1233,10 +1236,10 @@ zuperxyinfo {
 }
 
 .superloaderSTART {
-  -webkit-animation: superloader-keyframeSTART 0.2s linear 1 forwards; /* Safari 4+ */
-  -moz-animation: superloader-keyframeSTART 0.2s linear 1 forwards; /* Fx 5+ */
-  -o-animation: superloader-keyframeSTART 0.2s linear 1 forwards; /* Opera 12+ */
-  animation: superloader-keyframeSTART 0.2s linear 1 forwards; /* IE 10+, Fx 29+ */
+  -webkit-animation: superloader-keyframeSTART 0.2s linear 1 forwards;
+  -moz-animation: superloader-keyframeSTART 0.2s linear 1 forwards;
+  -o-animation: superloader-keyframeSTART 0.2s linear 1 forwards;
+  animation: superloader-keyframeSTART 0.2s linear 1 forwards;
 }
 
 @keyframes superloader-keyframeSTART {
@@ -1335,13 +1338,11 @@ zuperxyinfo {
 
 .super-starz-text-Pc {
   font-family: kaushan_scriptregular;
-  font-size: 2.1vw;
+  font-size: 1.75vw;
   font-weight: bolder;
   transition: opacity 1.5s;
 }
-/*   S S S    S S S   S S S   S S S   S S S   S S S   S S S   S S S   S S S   S S S   S S S    */
 
-/*   T T T   T T T   T T T   T T T   T T T   T T T   T T T   T T T   T T T   T T T T T T  T T T */
 .tur {
   padding: "0px";
   -webkit-filter: drop-shadow(0.6px 0.1px 5px rgba(255, 255, 255, 0.6));
@@ -1484,10 +1485,6 @@ zuperxyinfo {
   filter: drop-shadow(1.9px 0.1px 1.6px rgba(11, 23, 40, 0.6));
 }
 
-/*   T T T   T T T   T T T   T T T   T T T   T T T   T T T   T T T   T T T   T T T T T T  T T T */
-
-/*   Z Z  Z   Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z   */
-
 .zuperkingxx {
   -webkit-filter: drop-shadow(1px 1px 1.3px rgba(0, 0, 0, 1));
   filter: drop-shadow(1px 1px 1.3px rgba(0, 0, 0, 1));
@@ -1577,4 +1574,3 @@ zuperxyinfo {
   text-shadow: 1.5px 3px 2px #000000;
   color: #ffffff;
 }
-/*   Z Z  Z   Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z Z Z  Z   */

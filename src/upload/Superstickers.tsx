@@ -32,6 +32,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import LayersIcon from "@mui/icons-material/Layers";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import FontDownloadIcon from "@mui/icons-material/FontDownload";
+import AddIcon from '@mui/icons-material/Add';
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import TextFormatIcon from "@mui/icons-material/TextFormat";
@@ -45,6 +46,7 @@ import CropRotateIcon from "@mui/icons-material/CropRotate";
 import CloseIcon from "@mui/icons-material/Close";
 import RestoreIcon from "@mui/icons-material/Restore";
 import SettingsBackupRestoreIcon from "@mui/icons-material/SettingsBackupRestore";
+import UploadIcon from '@mui/icons-material/Upload';
 
 function Superstickersx({
   setstartSuperStickerblur,
@@ -69,6 +71,8 @@ function Superstickersx({
 }: any): JSX.Element {
   const [superundoArray, setsuperundoArray] = useState<any>([]);
 
+
+    const { REACT_APP_SUPERSTARZ_URL } = process.env;
   const superundoArrayxx = [...superundoArray];
   const duplicateItemuploadxx = [...duplicateItemupload];
   const effectModexx = [...effectMode];
@@ -98,7 +102,31 @@ function Superstickersx({
 
   const darkmodeReducer = darkmode;
 
+
+  ///
+  ///
+  ///
+  /// INTERFACE/TYPES FOR SCREENHEIGHT AND DARKMODE
+  interface RootUserdataReducer {
+    UserdataReducer: {
+      id:number;
+      username: string;
+    };
+  }
+
+  ///
+  ///
+  ///
+  /// GET SCREENHEIGHT FROM REDUX STORE
+  const { id, username } = useSelector((state: RootUserdataReducer) => ({
+    ...state.UserdataReducer,
+  }));
+
+  const idReducer = id;
+   const usernameReducer =  username;
+
   const aRef: any = useRef(null);
+  const  aaRef: any = useRef(null);
 
   const [superImageHolderxDrawn, setsuperImageHolderxDrawn] =
     useState<boolean>(false);
@@ -189,6 +217,8 @@ function Superstickersx({
 
   const [showTextField, setshowTextField] = useState<boolean>(false);
 
+    const [startmerge, setstartmerge] = useState<boolean>(false);
+
   const [Textwidthx, setTextwidthx] = useState(0);
 
   const [canvaswidth, setcanvaswidth] = useState(0);
@@ -209,6 +239,8 @@ function Superstickersx({
 
   const [restoreswitcher, setrestoreswitcher] = useState(0);
 
+    const [superLoadFadex, setsuperLoadFadex] = useState<boolean>(false);
+
   var width = " ";
   var sizex: "small" | "medium" | undefined = undefined;
 
@@ -222,6 +254,8 @@ function Superstickersx({
   const [stickersize, setstickersize] = useState<number>(1);
 
   const [addedImagex, setaddedImagex] = useState<any>(null);
+
+    const [addedImagexx, setaddedImagexx] = useState<any>(null);
 
   var transform = "";
   var font1 = "";
@@ -366,6 +400,16 @@ function Superstickersx({
     OriginalImageHeight,
     OriginalImageWidth,
   ]);
+
+   useEffect(() => {
+  if(startmerge && postData.length === 0){
+    
+   
+    
+    callfeedsx()}
+    
+  }, [startmerge,REACT_APP_SUPERSTARZ_URL]);
+
 
   //
   ///
@@ -872,14 +916,103 @@ function Superstickersx({
       }
     }
   };
-  const addedimage = (e: any) => {
+
+
+
+   const GetSecureURL=(datax: any)=>{ Axios.post(`${REACT_APP_SUPERSTARZ_URL}/get_signed_url_Sticker`)
+        .then((response)=>{
+          setsuperLoadFadex(false);
+          var url = response.data.url;
+        setsuperLoadFadex(true);
+      PutImageInS3WithURL(datax,url);
+        }) .catch(function (error) {
+            setsuperLoadFadex(false);
+          alert("caption erroerrr");
+        })}
+
+
+         const PutImageInS3WithURL= useCallback(
+   (a:any,url:any,) => {
+  Axios.put(url,a).then((response) => {
+        setsuperLoadFadex(false);
+             console.log(response);
+          if (response.status === 200) {       
+
+      setsuperLoadFadex(true);
+       
+          let imagelink =url.split('?')[0];
+         
+            var datak = {
+         imagedata: imagelink,
+          id: idReducer,
+       };
+          
+UpdateStickerDatabaseStatus200(datak);
+        
+   
+        } }).catch(function (error) {
+           setsuperLoadFadex(false);
+          alert("caption erroerrr");
+        });  
+    },
+    [idReducer]
+  );
+
+
+     
+      const UpdateStickerDatabaseStatus200=(datak:any)=>{  Axios.post(
+        `${REACT_APP_SUPERSTARZ_URL}/sticker_upload_data`,
+        { values: datak }).then((response) => {
+          setsuperLoadFadex(false);
+
+          if (response.data.message === "sticker image data updated") {
+           setPostData([]);
+           callfeedsx();
+          }
+        })
+        .catch(function (error) {
+          setsuperLoadFadex(false);
+          alert(" error");
+        });}
+
+
+   
+
+
+ 
+
+ const addedimagex = useCallback(async(e:any) => {
+
+
+
     if (e.target.files && e.target.files.length > 0) {
       const FileArray = Array.from(e.target.files).map((file: any) =>
         URL.createObjectURL(file)
       );
 
-      setaddedImagex(FileArray[0]);
 
+         const Newstickfilterx: any = new Image();
+Newstickfilterx.origin = 'anonymous';
+
+    Newstickfilterx.src = FileArray[0];
+
+
+    Newstickfilterx.onload = function () {  
+
+
+        aaRef.current.width = Newstickfilterx.naturalWidth;
+        aaRef.current.height = Newstickfilterx.naturalHeight;
+
+        
+
+         const ctx = aaRef.current.getContext("2d");
+        
+    var ff=ctx.drawImage(Newstickfilterx,0,0);
+
+       var data = aaRef.current.toDataURL("image/png", 1.0);
+
+
+      setaddedImagex(data);
       setstickerOPtionsDefault(2);
       setcropsticker({
         ...cropsticker,
@@ -887,6 +1020,26 @@ function Superstickersx({
         y: crop.y * 100,
       });
       clearFilterDrag();
+      
+    }
+    }
+
+  
+  }, [aaRef]);
+
+  const addedimage = async(e: any) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const FileArray = Array.from(e.target.files).map((file: any) =>
+        URL.createObjectURL(file)
+      );
+
+  const res = await fetch(FileArray[0]);
+                  const datax = await res.blob();
+
+setsuperLoadFadex(true);
+      GetSecureURL(datax);
+    
+
     }
   };
 
@@ -982,9 +1135,199 @@ function Superstickersx({
     setstartSuperStickerblur(false);
   };
 
+
+
+  const [postData, setPostData] = useState<Array<any>>([]);
+
+
+   const callfeedsx = () => {
+    Axios.post(`${REACT_APP_SUPERSTARZ_URL}/feeds_stickers`, { withCredentials: true,})
+      .then((response) => {
+        if (response.data.message === "feeds fetched") {
+          var postdataRep = response.data.payload;
+         setPostData(postdataRep);
+         }
+      })
+      .catch(function (error) {
+        console.log("Connection malfunction profile outter 2");
+      });
+  };
+
+
   return (
     <>
       <Grid container>
+
+        {superLoadFadex ? (
+            <>
+              <Grid
+                container
+                style={{
+                  backgroundColor: darkmodeReducer
+                    ? "rgba(50,50,50,0.65)"
+                    : "rgba(250,250,250,0.65)",
+                  position: "fixed",
+                  top: "0px",
+                  width: "100%",
+                  height: "100%",
+                  zIndex: 10000,
+                }}
+              ></Grid>{" "}
+            </>
+          ) : null}
+
+{startmerge ?<> <Grid
+          item
+              onClick={() => {
+                    setstartmerge(false)
+                    }}
+          xs={12}
+          style={{
+            width: "100%",
+            height: "100%",
+            position: "fixed",
+            bottom: "0vh",
+            zIndex: 95,
+           cursor:"pointer"
+          }}
+        ></Grid>
+
+
+         <Grid
+          item
+           className={
+                darkmodeReducer
+                  ? "mobileTextfield-backplateColorDark"
+                  : "mobileTextfield-backplateColorLight"
+              }
+          xs={12}
+          style={{
+            width: "100%",
+            height: "46%",
+            position: "fixed",
+            bottom: "0vh",
+            zIndex: 100,
+           overflow:"auto"
+          }}
+        >
+
+          
+           {postData.length > 0 ? <> 
+           
+            <Grid
+          item
+             
+          xs={12}
+          style={{
+        padding:"0px",
+            height: "90px",
+          textAlign:"center",  margin: "auto",  width: "100%",marginTop:"15px",marginRight:"10vw"
+          }}
+        >
+
+
+
+            <label htmlFor="filewwyxx" style={{padding:"0px"}}>
+                  <UploadIcon
+                    className={
+                      darkmodeReducer
+                        ? "make-small-icons-clickable-darkxx dontallowhighlighting zuperkingIcon "
+                        : "make-small-icons-clickable-lightxx  dontallowhighlighting zuperkingIcon  "
+                    }
+                    style={{
+                      margin: "auto",
+                      color: "#ffffff",
+                      fontSize: matchTabletMobile
+                        ? `${mobilefont}vh`
+                        : `${pcfont}vw`,
+                        textAlign:"center"
+                      
+                    }}
+                  />
+                  <input
+                    onChange={addedimagex}
+                    type="file"
+                    name="superImages"
+                    accept="image/*"
+                    id="filewwyxx"
+                    style={{ visibility: "hidden" }}
+                  />
+                </label>
+          
+        </Grid>
+
+             <Masonry
+              columns={6}
+              spacing={0}
+              style={{
+                padding: "0px",
+               marginTop:"10px"
+              }}
+            >
+
+               <label htmlFor="filewwy" style={{textAlign:"center",marginTop:"10vh",paddingBottom:"10px",}}>
+                  <AddIcon
+                    className={
+                      darkmodeReducer
+                        ? "make-small-icons-clickable-darkxx dontallowhighlighting zuperkingIcon "
+                        : "make-small-icons-clickable-lightxx  dontallowhighlighting zuperkingIcon  "
+                    }
+                    style={{
+                      margin: "auto",
+                      color: "#ffffff",
+                      fontSize: matchTabletMobile
+                        ? `${mobilefont}vh`
+                        : `${pcfont}vw`,
+                      
+                    }}
+                  />
+                  <input
+                    onChange={addedimage}
+                    type="file"
+                    name="superImages"
+                    accept="image/*"
+                    id="filewwy"
+                    style={{ visibility: "hidden" }}
+                  />
+                </label>
+          
+
+
+
+              {postData.map((post: any, i: any) => (
+                <div
+                  key={i}
+                  style={{
+                    position: "relative",
+                   paddingBottom:"10px",
+                    padding: "0px",
+                  }}
+                >
+
+
+                   <img 
+                      src={postData[i].stickname}
+                      alt="a superstarz post "
+                      style={{
+                       
+                        width: "60%",
+                        height: "auto",
+                        padding: "0px",
+                        objectFit: "contain",
+                       
+                      }} crossOrigin="anonymous"
+                    />
+                </div>
+              ))}
+            </Masonry>
+            
+             </> :null}
+          
+          </Grid> </>  : null}
+  
+
+
+
         <Grid
           item
           xs={12}
@@ -1753,8 +2096,12 @@ function Superstickersx({
                   padding: "20px",
                 }}
               >
-                <label htmlFor="filewwy">
+             
                   <InsertPhotoIcon
+
+                    onClick={() => {
+                    setstartmerge(true)
+                    }}
                     className={
                       darkmodeReducer
                         ? "make-small-icons-clickable-dark dontallowhighlighting zuperkingIcon "
@@ -1768,15 +2115,7 @@ function Superstickersx({
                         : `${pcfont}vw`,
                     }}
                   />
-                  <input
-                    onChange={addedimage}
-                    type="file"
-                    name="superImages"
-                    accept="image/*"
-                    id="filewwy"
-                    style={{ visibility: "hidden" }}
-                  />
-                </label>
+                
               </Grid>
               {superundoArray.length > 1 ? (
                 <Grid
@@ -2280,6 +2619,26 @@ function Superstickersx({
             top: "200000px",
           }}
         />
+
+
+ <canvas
+          className={
+            darkmodeReducer ? "turlightpostdarkx" : "turlightpostlightx"
+          }
+          ref={aaRef}
+          style={{
+            padding: "0px",
+            margin: "auto",
+
+            position: "fixed",
+           
+            top: "200000px",
+          }}
+        />
+
+   
+
+
 
         <img
           ref={aRef}

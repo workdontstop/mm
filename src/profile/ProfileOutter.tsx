@@ -16,6 +16,7 @@ import { UpdateNavCropReducer } from "../GlobalActions";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { DarkmodeToggleAction } from ".././GlobalActions";
 
+
 import {
   Paper,
   Grid,
@@ -27,12 +28,21 @@ import {
 } from "@material-ui/core";
 
 function ProfileOutter() {
-  const { REACT_APP_SUPERSTARZ_URL } = process.env;
+  const { REACT_APP_SUPERSTARZ_URL,REACT_APP_APPX_STATE } = process.env;
+
+    var allow4dev = "";
+
+  if (REACT_APP_APPX_STATE === "dev") {
+    allow4dev = "http://localhost:1000";
+  } else {
+    allow4dev = "";
+  }
 
   const dispatch = useDispatch();
 
   const [postData, setPostData] = useState<Array<any>>([]);
   const [postDatainner, setpostDatainner] = useState<Array<any>>([[]]);
+    const [postDatainnerThumb, setpostDatainnerThumb] = useState<Array<any>>([[]]);
 
   const getSliderWidthRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +51,7 @@ function ProfileOutter() {
 
   const [x, setx] = useState<boolean>(false);
 
-  useEffect(() => {}, []);
+ 
 
   const [getSliderWidth, setgetSliderWidth] = useState(0);
 
@@ -62,6 +72,12 @@ function ProfileOutter() {
   const [ShowmaxPost, setShowmaxPost] = useState<boolean>(false);
 
   const [superSettings, setsuperSettings] = useState<boolean>(false);
+
+  const [billboardserverswitch, setbillboardserverswitch] =
+    useState<boolean>(false);
+
+  const [profileServerserverswitch, setprofileServerserverswitch] =
+    useState<boolean>(false);
 
   ///
   ///
@@ -166,6 +182,10 @@ function ProfileOutter() {
       callfeeds();
     } else if (DeviceBackButtonClicked === 3) {
       window.history.back();
+      setbillboardserverswitch(true);
+    } else if (DeviceBackButtonClicked === 4) {
+      window.history.back();
+      setprofileServerserverswitch(true);
     } else {
     }
   };
@@ -176,6 +196,7 @@ function ProfileOutter() {
   /// INTERFACE/TYPES FOR SCREENHEIGHT AND DARKMODE
   interface RootStateGlobalReducer {
     GlobalReducer: {
+      snapStart:boolean;
       darkmode: boolean;
       screenHeight: number;
     };
@@ -185,13 +206,16 @@ function ProfileOutter() {
   ///
   ///
   /// GET SCREENHEIGHT FROM REDUX STORE
-  const { screenHeight, darkmode } = useSelector(
+  const { screenHeight, darkmode,snapStart } = useSelector(
     (state: RootStateGlobalReducer) => ({
       ...state.GlobalReducer,
     })
   );
   const screenHeightReducer = screenHeight;
   const darkmodeReducer = darkmode;
+  const snapStartReducer=snapStart;
+
+
 
   ///
   ///
@@ -222,9 +246,7 @@ function ProfileOutter() {
   ///DOT ENV DATA
 
   const callfeeds = () => {
-    Axios.post(`${REACT_APP_SUPERSTARZ_URL}/feeds_chronological`, {
-      withCredentials: true,
-    })
+    Axios.post(`${REACT_APP_SUPERSTARZ_URL}/feeds_chronological`, { withCredentials: true,})
       .then((response) => {
         if (response.data.message === "feeds fetched") {
           var postdataRep = response.data.payload;
@@ -241,27 +263,37 @@ function ProfileOutter() {
           });
 
           const newArrxt: any = [[...postDatainner]];
+            const newArrxtThumb: any = [[...postDatainnerThumb]];
           postdataRep.map((obj: any, index: any) => {
             const newArrxtq: any = [];
+             const newArrxtqThumb: any = [];
             for (let i = 0; i < postdataRep[index].post_count; i++) {
               ///////////////////////////////
 
               if (i === 0) {
                 newArrxtq[i] = `${postdataRep[index].item1}`;
+                newArrxtqThumb[i] = `${postdataRep[index].thumb1}`;
               } else if (i === 1) {
                 newArrxtq[i] = `${postdataRep[index].item2}`;
+                 newArrxtqThumb[i] = `${postdataRep[index].thumb2}`;
               } else if (i === 2) {
                 newArrxtq[i] = `${postdataRep[index].item3}`;
+                newArrxtqThumb[i] = `${postdataRep[index].thumb3}`;
               } else if (i === 3) {
                 newArrxtq[i] = `${postdataRep[index].item4}`;
+                 newArrxtqThumb[i] = `${postdataRep[index].thumb4}`;
               } else if (i === 4) {
                 newArrxtq[i] = `${postdataRep[index].item5}`;
+                 newArrxtqThumb[i] = `${postdataRep[index].thumb5}`;
               } else if (i === 5) {
                 newArrxtq[i] = `${postdataRep[index].item6}`;
+                 newArrxtqThumb[i] = `${postdataRep[index].thumb6}`;
               } else if (i === 6) {
                 newArrxtq[i] = `${postdataRep[index].item7}`;
+                 newArrxtqThumb[i] = `${postdataRep[index].thumb7}`;
               } else if (i === 7) {
                 newArrxtq[i] = `${postdataRep[index].item8}`;
+                newArrxtqThumb[i] = `${postdataRep[index].thumb8}`;
               } else if (i === 8) {
                 newArrxtq[i] = `${postdataRep[index].item9}`;
               } else if (i === 9) {
@@ -283,7 +315,9 @@ function ProfileOutter() {
 
               if (i + 1 === postdataRep[index].post_count) {
                 newArrxt[index] = newArrxtq;
+                   newArrxtThumb[index] = newArrxtqThumb;
                 setpostDatainner(newArrxt);
+                  setpostDatainnerThumb(newArrxtThumb);
               }
               document.body.focus();
               /////
@@ -399,12 +433,14 @@ function ProfileOutter() {
   interface RootStateReducerImage {
     UserdataReducer: {
       image: string;
+      imageThumb: string;
     };
   }
-  const { image } = useSelector((state: RootStateReducerImage) => ({
+  const { image,imageThumb } = useSelector((state: RootStateReducerImage) => ({
     ...state.UserdataReducer,
   }));
   const imageReducer = image;
+    const imageReducerThumb = imageThumb;
 
   const blank = () => {};
 
@@ -542,6 +578,10 @@ function ProfileOutter() {
     }
   };
 
+
+
+  
+
   const profilex = (e: any) => {
     if (e.target.files && e.target.files.length > 0) {
       const FileArray = Array.from(e.target.files).map((file: any) =>
@@ -587,13 +627,11 @@ function ProfileOutter() {
 
   const rememberUser = () => {
     Axios.post(
-      `http://${REACT_APP_SUPERSTARZ_URL}/keepmeloggedin`,
+      `${REACT_APP_SUPERSTARZ_URL}/keepmeloggedin`,
       {
         values: "logout",
       },
-      {
-        withCredentials: true,
-      }
+      { withCredentials: true,}
     )
       .then((response) => {
         if (response.data.message === "cookie") {
@@ -604,6 +642,11 @@ function ProfileOutter() {
         console.log("Connection failure ");
       });
   };
+
+
+  
+
+ 
 
   return (
     <>
@@ -621,7 +664,7 @@ function ProfileOutter() {
                 : "postscroll-lightm"
             }
             style={{
-              scrollSnapType: x ? "y mandatory" : "",
+              scrollSnapType: snapStartReducer ?  x ? "y mandatory" : "" :  "",
 
               backgroundImage: PaperStyleReducer,
               borderRadius: "0px",
@@ -643,12 +686,14 @@ function ProfileOutter() {
                 style={{ scrollSnapAlign: "start" }}
               >
                 <Menu
+                 setsuperSettings={setsuperSettings}
                   showModalUpload={showModalUpload}
                   OpenUploadModal={OpenUploadModal}
                   getSliderWidth={getSliderWidth}
                   paperPostScrollRef={paperPostScrollRef}
                 />
                 <Billboard
+                  billboardserverswitch={billboardserverswitch}
                   OpenModalForm={OpenModalForm}
                   click={click}
                   billboardx={billboardx}
@@ -714,28 +759,31 @@ function ProfileOutter() {
                         className="zuperkinginfo"
                       />
                     </Grid>
-                    <img
-                      className={
-                        darkmodeReducer
-                          ? `turprofileDark image-zoom-on-click`
-                          : ` turprofileLight image-zoom-on-click`
-                      }
-                      style={{
-                        cursor: "pointer",
-                        position: "absolute",
-                        zIndex: 0,
-                        textAlign: "left",
-                        objectFit: "contain",
-                        width: "100%",
-                        borderRadius: "50%",
-                        margin: "auto",
-                        filter: "blur(1.3px)",
-                        display: "none",
-                      }}
-                      src={`./images/profilethumb/${imageReducer}`}
-                      alt="Superstarz Billboard "
-                    />{" "}
-                    <label htmlFor="profilexx">
+  <img  onClick={() => {
+                          ////OpenModalForm();
+                        }}
+                        className={
+                          darkmodeReducer
+                            ? `turprofileDark image-gray-on-click`
+                            : ` turprofileLight image-gray-on-click`
+                        }
+                        style={{
+                          cursor: "pointer",
+                          position: "absolute",
+                          zIndex: 1,
+                          objectFit: "contain",
+                          width: "100%",
+                          borderRadius: "50%",
+                          margin: "auto",
+                          filter: "blur(4px)"
+                        }}
+                     
+                         src={`${imageReducerThumb}`}
+                        alt="Superstarz Billboard "
+                      />
+                       <label htmlFor="profilexx"   >
+                                     
+       
                       <img
                         onClick={() => {
                           ////OpenModalForm();
@@ -747,17 +795,20 @@ function ProfileOutter() {
                         }
                         style={{
                           cursor: "pointer",
-                          position: "relative",
+                         position: "relative",
+                         top:"0px",
                           zIndex: 1,
                           objectFit: "contain",
                           width: "100%",
                           borderRadius: "50%",
                           margin: "auto",
                         }}
-                        src={`./images/profile/${imageReducer}`}
+                         src={`${imageReducer}`}
                         alt="Superstarz Billboard "
                       />
+       
                     </label>
+                  
                   </Grid>
                 </Grid>
 
@@ -767,7 +818,7 @@ function ProfileOutter() {
                   md={5}
                   style={{
                     position: "relative",
-                    height: "19.5vh",
+                    height: "34vh",
                     paddingLeft: matchPc
                       ? "25px"
                       : matchTablet
@@ -834,6 +885,18 @@ function ProfileOutter() {
                   </Grid>
                 </Grid>
               ) : null}
+
+
+                <Grid
+                        item
+                        xs={12}
+                        style={{
+                       
+                        }}
+                      >
+                       
+                      </Grid>
+                      
               {showProfiileData ? (
                 <Profile
                   x={x}
@@ -849,9 +912,18 @@ function ProfileOutter() {
                   aboutTemplateGo={aboutTemplateGo}
                   commentTemplateGo={commentTemplateGo}
                   postDatainner={postDatainner}
+                  postDatainnerThumb={postDatainnerThumb}
                   paperPostScrollRef={paperPostScrollRef}
                 />
               ) : null}
+
+
+                   <Grid item
+                    xs={12}
+                    style={{
+                    height: "700px",
+                    }}
+                  ></Grid>
 
               {superSettings ? (
                 <>
@@ -879,6 +951,7 @@ function ProfileOutter() {
                         width: "100%",
                         height: "100%",
                         zIndex: 8,
+                        
                       }}
                     ></Grid>{" "}
                     <Grid
@@ -999,6 +1072,7 @@ function ProfileOutter() {
                 cropimageProfile={cropimageProfile}
                 showModalUploadProfile={showModalUploadProfile}
                 typex={typex}
+                
               />
 
               <Upload

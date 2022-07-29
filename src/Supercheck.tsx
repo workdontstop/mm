@@ -17,11 +17,29 @@ import { rememberMeAction } from "./GlobalActions";
 function Supercheck() {
   const dispatch = useDispatch();
 
-  ///
+
+
+
+    const pthumb= useRef<any>();
+     const pro= useRef<any>();
+   
+
+
+    ///
   ///
   ///
   ///DOT ENV FILE
-  const { REACT_APP_SUPERSTARZ_URL } = process.env;
+  const { REACT_APP_SUPERSTARZ_URL,REACT_APP_APPX_STATE } = process.env;
+
+    var allow4dev = "";
+
+  if (REACT_APP_APPX_STATE === "dev") {
+    allow4dev = "http://localhost:1000";
+  } else {
+    allow4dev = "";
+  }
+
+
 
   const [Feedbackshow, setFeedbackshow] = useState<boolean>(false);
   const [rememberMeButtonshow] = useState<boolean>(false);
@@ -85,12 +103,14 @@ function Supercheck() {
   interface RootStateReducerImage {
     UserdataReducer: {
       image: string;
+       imageThumb: string;
     };
   }
-  const { image } = useSelector((state: RootStateReducerImage) => ({
+  const { image, imageThumb } = useSelector((state: RootStateReducerImage) => ({
     ...state.UserdataReducer,
   }));
   const imageReducer = image;
+   const imageThumbReducer = imageThumb;
 
   ///
   ///
@@ -251,9 +271,7 @@ function Supercheck() {
       {
         values: rememberMeType,
       },
-      {
-        withCredentials: true,
-      }
+      { withCredentials: true,}
     )
       .then((response) => {
         if (response.data.message === "session_Cookie_Activated") {
@@ -286,6 +304,13 @@ function Supercheck() {
     ...state.IsLoggedReducer,
   }));
   const loggedInReducer = loggedIn;
+
+
+
+  const hdimageloaded =()=>{
+ pro.current.style.display="block";
+  pthumb.current.style.display="none";
+  }
 
   return loggedInReducer ? (
     <>
@@ -350,7 +375,7 @@ function Supercheck() {
                 />
               </Grid>
 
-              <img
+               <img  ref={pthumb}
                 onClick={Gotoprofile}
                 className="make-small-image-clickable-neutral  iconPc"
                 style={{
@@ -359,9 +384,28 @@ function Supercheck() {
                   width: imageWidth,
                   borderRadius: "200px",
                   margin: "auto",
+                 filter: "blur(3px)",
                   zIndex: 1,
                 }}
-                src={`./images/profile/${imageReducer}`}
+                 src={`${imageThumbReducer}`}
+                alt="SuperstarZ logo"
+              />
+
+              <img
+              ref={pro}
+                onClick={Gotoprofile}
+                className="make-small-image-clickable-neutral  iconPc"
+                onLoad={hdimageloaded}
+                style={{
+                  position: "relative",
+                  objectFit: "contain",
+                  width: imageWidth,
+                  borderRadius: "200px",
+                  margin: "auto",
+                  zIndex: 1,
+                 display:"none"
+                }}
+                 src={`${imageReducer}`}
                 alt="SuperstarZ logo"
               />
             </Grid>

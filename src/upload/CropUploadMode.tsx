@@ -1158,11 +1158,12 @@ function CropUploadModex({
               left: "0px",
               height: matchPc ? "24.4vh" : "20.5vh",
               paddingBottom: "1px",
+              marginTop:selectedImage.length > 0 ? "0px" : "20vh"
             }}
           >
             <animated.div ref={optionsCollectImageRef} style={modalanimation}>
               {optionsImages.map((im: any, i: any) => (
-                <Grid key={i} item xs={12}>
+                <Grid key={i} item xs={12}  style={{opacity:1}}>
                   <Grid
                     item
                     xs={12}
@@ -1199,12 +1200,12 @@ function CropUploadModex({
                           clickOptions(i, optionsClickType, "");
                         }}
                         style={{
-                          cursor: ActiveSlide === i ? "pointer" : "alias",
+                          cursor: ActiveSlide === i ? "pointer" : "copy",
                           width: `${getSliderWidthNew}px`,
                           height: `${getSliderWidthNew}px`,
                           backgroundColor: darkmodeReducer
                             ? "rgba(010,010,010, 0.68)"
-                            : "rgba(211,211,211, 0.7)",
+                            : "rgba(170,170,170, 0.5)",
                           borderRadius: "50%",
                           marginTop: "2.15vh",
                           textAlign: "center",
@@ -1240,12 +1241,12 @@ function CropUploadModex({
                             ClickMonster(i);
                           }}
                           style={{
-                            cursor: ActiveSlide === i ? "pointer" : "alias",
+                            cursor: ActiveSlide === i ? "pointer" : "copy",
                             width: `${getSliderWidthNew}px`,
                             height: `${getSliderWidthNew}px`,
                             backgroundColor: darkmodeReducer
                               ? "rgba(010,010,010, 0.68)"
-                              : "rgba(211,211,211, 0.7)",
+                              : "rgba(170,170,170, 0.5)",
                             borderRadius: "50%",
                             marginTop: "2.15vh",
                             textAlign: "center",
@@ -1356,6 +1357,8 @@ function CropUploadModex({
           />
         </Grid>
       </Grid>
+
+    
 
       <Grid container style={{ padding: "0px" }}>
         <Grid

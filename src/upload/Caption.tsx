@@ -53,7 +53,9 @@ function Captionx({
   closeUploadModal,
   setstartTopicCap,
   selectedImage,
-  finalImageData,
+ finalImageData,
+finalImageDataSD,
+     finalImageDataBASE64,
 }: any): JSX.Element {
   const [matchTabletMobile, setmatchTabletMobile] = useState<boolean>(false);
 
@@ -68,6 +70,14 @@ function Captionx({
   };
 
   const [captionvalues, setcaptionvalues] = useState(Value);
+  
+
+  var s3finaldata:any=[];
+
+   var s3finaldataThumb:any=[];
+
+    var s3finaldataAll:any=[];
+
 
   ///
   ///
@@ -162,44 +172,98 @@ function Captionx({
 
   const dispatch = useDispatch();
 
-  const UploadSuperData = useCallback(
-    (a: any) => {
-      setsupeFilterLoadFadex(true);
-      // Creating object of current date and time
-      // by using Date()
-      const now = new Date();
 
-      // Formatting the date and time
-      // by using date.format() method
-      const datevalue = date.format(now, "YYYY_MM_DD_HH_mm_ss");
-      let formData = new FormData();
-      const datev = new Date();
-
-      formData.append("id", `${idReducer}`);
-      formData.append("topic", captionvalues.topic);
-      formData.append("caption", captionvalues.caption);
-
-      for (let i = 0; i < selectedImage.length; i++) {
-        formData.append("final", a[i], `blob${i}${datevalue}`);
-      }
-
-      Axios.post(`${REACT_APP_SUPERSTARZ_URL}/upload`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-        .then((response) => {
-          if (response.data.message === "images uploaded") {
+   const UpdatePostDatabaseStatus200=(datak:any,b:any)=>{  Axios.post(
+        `${REACT_APP_SUPERSTARZ_URL}/post_upload_data`,
+        { values: datak }).then((response) => {
+          console.log(response);
+             setsupeFilterLoadFadex(false);
+             if (response.data.message === "images uploaded") {
             setsupeFilterLoadFadex(false);
             closeUploadModal(2);
           }
         })
         .catch(function (error) {
-          alert("caption error");
-        });
+             setsupeFilterLoadFadex(false);
+          alert(" error");
+        });}
+
+        
+
+   
+  const PutImageInS3WithURL= useCallback(
+   (holder:any,a:any,b:any,base64:any,allow:boolean,i:number) => {
+
+  let urlx="";
+var x:any=null;
+       if(allow){ urlx=holder[i].urlThumb; x=b; }else{ urlx=holder[i].urlHD; x=a; }
+  Axios.put(urlx,x[i]).then((response) => {
+          setsupeFilterLoadFadex(false);
+          if (response.status === 200) {       
+      setsupeFilterLoadFadex(true);
+        if(allow){
+          let imagelink =urlx.split('?')[0];
+            s3finaldataThumb[i] = imagelink;
+           var datak = {
+            imagedata: s3finaldata[i],
+         imagedataThumb: s3finaldataThumb[i],
+          };
+        s3finaldataAll[i] = datak;
+
+if( i + 1 === finalImageData.length){
+
+  var datap={
+    topic:captionvalues.topic,
+caption:captionvalues.caption,
+id: idReducer,
+    all:s3finaldataAll
+  }
+
+///console.log(s3finaldataAll);
+ setsupeFilterLoadFadex(true);
+ UpdatePostDatabaseStatus200(datap,base64);
+}else{   PutImageInS3WithURL(holder,a,b,base64,false,i+1);  }
+        }else{ 
+          let imagelinkx =urlx.split('?')[0];
+             s3finaldata[i] = imagelinkx;  
+      PutImageInS3WithURL(holder,a,b,base64,true,i);   
+      }} }).catch(function (error) {
+           setsupeFilterLoadFadex(false);
+          alert("caption erroerrr");
+        }); },
+    [idReducer,s3finaldata,s3finaldataThumb]
+  );
+
+
+
+   const GetSecureURL=(hdBlob: any,thumbBlob:any,hdBase64: any)=>{
+     var kob = {
+           count: finalImageData.length
+     }
+     Axios.post(`${REACT_APP_SUPERSTARZ_URL}/get_signed_url_4upload_post`,{values:kob})
+        .then((response)=>{
+         setsupeFilterLoadFadex(false);
+          var holder = response.data.holder;
+     setsupeFilterLoadFadex(true);
+       PutImageInS3WithURL(holder,hdBlob,thumbBlob,hdBase64,false,0);
+        }) .catch(function (error) {
+            setsupeFilterLoadFadex(false);
+          alert("caption erroerrr");
+        })}
+
+
+
+        
+
+  
+  const UploadSuperData = useCallback((hdBlob: any,thumbBlob: any,hdBase64: any) => {
+    setsupeFilterLoadFadex(true);
+GetSecureURL(hdBlob,thumbBlob,hdBase64);     
     },
     [finalImageData, captionvalues, closeUploadModal, idReducer]
   );
+
+
 
   return (
     <>
@@ -290,8 +354,8 @@ function Captionx({
         >
           <CheckIcon
             onClick={() => {
-              ////postdata();
-              UploadSuperData(finalImageData);
+              //////postdata();
+              UploadSuperData(finalImageData,finalImageDataSD,finalImageDataBASE64);
             }}
             className={
               darkmodeReducer

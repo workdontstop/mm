@@ -9,6 +9,7 @@ import {
   CHANGE_OPTIONS_TOP,
   CHANGE_NAV_FILTER,
   CHANGE_NAV_CROP,
+  UPDATE_SNAP,
 } from "./global_ActionTypes";
 
 export function DarkmodeAction(newDarkModeData: boolean) {
@@ -17,6 +18,16 @@ export function DarkmodeAction(newDarkModeData: boolean) {
     payload: newDarkModeData,
   };
 }
+
+
+export function SnapToggleAction(Payload: boolean) {
+  return {
+    type: UPDATE_SNAP,
+     payload: Payload,
+  };
+}
+
+
 
 export function DarkmodeToggleAction() {
   return {

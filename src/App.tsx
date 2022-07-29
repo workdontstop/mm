@@ -15,7 +15,7 @@ import SuperstarzIconLight from "./images/s.png";
 import SuperstarzIconDark from "./images/sd.png";
 import ProfileOutter from "./profile/ProfileOutter";
 
-Axios.defaults.withCredentials = true;
+
 
 function App(): JSX.Element {
   ///
@@ -88,9 +88,7 @@ function App(): JSX.Element {
   ///
   ///MODAL ZOOMED STATE
   useEffect(() => {
-    Axios.post(`${REACT_APP_SUPERSTARZ_URL}/checkIsLogged`, {
-      withCredentials: true,
-    })
+    Axios.post(`${REACT_APP_SUPERSTARZ_URL}/checkIsLogged`)
       .then((response) => {
         if (response.data.message === "logged in") {
           dispatch(IsLoggedAction());

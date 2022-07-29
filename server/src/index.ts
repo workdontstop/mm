@@ -1,23 +1,48 @@
 const util = require("util");
 const mysql = require("mysql");
+const fs = require("fs");
+const sharp = require('sharp');
+const unlinkFile = util.promisify(fs.unlink);
+
+import dotenv from "dotenv";
+dotenv.config();
+
 const cookieParser = require("cookie-parser");
 import express = require("express");
+import {generateUploadURL} from "./ss3";
+
+
+
+
+
 var app: Application = express();
 var cors = require("cors");
-const path = require("path");
-const multer = require("multer");
 
-app.use(
-  cors({
-    credentials: true,
-    /////origin: "http://192.168.43.137:3000",
-    //// origin: "http://localhost:3000",
-    origin: "http://52.90.83.210:3000",
-  })
-);
+const path = require("path");
+
+const multer = require("multer");
+const { uploadFileTos3, getFileStreamFroms3 } = require("./s3");
+
+if (process.env.APP_STATE === "dev") {
+
+const corsOptions ={
+    origin:'http://localhost:3000', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200
+}
+app.use(cors(corsOptions));
+
+
+} else {
+  app.use(cors());
+}
+
+  
+
 
 app.use(express.json({ limit: "400mb" }));
 app.use(express.urlencoded({ limit: "400mb" }));
+
 app.use(cookieParser());
 const bcrypt = require("bcrypt");
 const { createTokens, validateToken, createTokensUpdate } = require("./jwt");
@@ -26,10 +51,10 @@ import { body, validationResult } from "express-validator";
 
 import jwt_decode from "jwt-decode";
 const CONNECTION_CONFIG = {
-  user: "root",
-  host: "localhost",
-  password: "password",
-  database: "superdata",
+  user: process.env.USER_DATABASE,
+  host: process.env.HOST_DATABASE,
+  password:process.env.PASSWORD_DATABASE,
+  database: process.env.DATABASE_NAME,
 };
 
 // Node.js program to demonstrate the
@@ -42,16 +67,27 @@ const CONNECTION_CONFIG = {
 ///
 ///
 ///reg
-const register = `INSERT INTO members (username,password,email,billboard1,profile_image,color1,color2,color_type,status,notification,tutorial,date,reg) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+
+
+const register = `INSERT INTO members (username,password,email,billboard1,billboardthumb1,profile_image,profile_image_thumb,color1,color2,color_type,status,notification,tutorial,date,reg) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 ///
 ///login
-const login = `SELECT username,id,password,color1,color2,color_type,profile_image,first_name,sur_name,quote,reg,billboard1,billboard2,biography FROM members WHERE username =?`;
+const login = `SELECT username,id,password,color1,color2,color_type,profile_image,profile_image_thumb,first_name,sur_name,quote,reg,billboard1,billboardthumb1,billboard2,billboardthumb2,biography FROM members WHERE username =?`;
 ///
+
 ///checkIsLogged
-const loginId = `SELECT username,id,password,color1,color2,color_type,profile_image,first_name,sur_name,quote,reg,billboard1,billboard2,biography  FROM members WHERE id =?`;
+const loginId = `SELECT username,id,password,color1,color2,color_type,profile_image,profile_image_thumb,first_name,sur_name,quote,reg,billboard1,billboardthumb1,billboard2,billboardthumb2,biography  FROM members WHERE id =?`;
 ///
 ///usernamecheck
 const checkpassword = `SELECT id FROM members WHERE  username =?`;
+
+
+
+
+
+
+const getstickers = `SELECT stickname FROM stickers  ORDER BY id DESC  LIMIT 30  `;
+
 
 ///checkIsLogged
 
@@ -75,159 +111,190 @@ const posts = `SELECT  (SELECT COUNT(*)
             (SELECT COUNT(*) 
           FROM emotions
          WHERE post = posts.id and type=4)lovely, 
-         
+        
          
          members.profile_image,members.username,color1,posts.id,sender,post_count,topic,
-caption,item1,itemtype1,item2,itemtype2,item3,itemtype3,item4,itemtype4,item5,itemtype5,item6,itemtype6,
-item7,itemtype7,item8,itemtype8,item9,itemtype9,item10,itemtype10,item11,itemtype11,item12,itemtype12,item13,itemtype13,
+caption,item1,thumb1,itemtype1,item2,thumb2,itemtype2,item3,thumb3,itemtype3,item4,thumb4,itemtype4,item5,thumb5,itemtype5,item6,thumb6,itemtype6,
+item7,thumb7,itemtype7,item8,thumb8,itemtype8,item9,itemtype9,item10,itemtype10,item11,itemtype11,item12,itemtype12,item13,itemtype13,
 item14,itemtype14,item15,itemtype15,item16,itemtype16,time  FROM posts inner join members on
- posts.sender = members.id   ORDER BY posts.id DESC  LIMIT 12  `;
+ posts.sender = members.id   ORDER BY posts.id DESC  LIMIT 25  `;
+ 
 
 const updateColor = `UPDATE members SET  color1 = ?, color2 = ?, color_type = ? WHERE (id = ?)`;
 
 const updateBasicpage = `UPDATE members SET username = ?, quote=?, biography=?   WHERE (id = ?)`;
 
-const updateProfilePic = `UPDATE members SET profile_image = ?  WHERE (id = ?)`;
+const updateProfilePic = `UPDATE members SET profile_image = ?, profile_image_thumb = ?, color1 = ?, color2 = ?, color_type = ?  WHERE (id = ?)`;
 
-const updatebillboardPic = `UPDATE members SET billboard1 = ?  WHERE (id = ?)`;
 
-const createpost = `INSERT INTO posts (sender,post_count,topic,caption,item1,itemtype1,item2,itemtype2,item3,itemtype3,item4,itemtype4,item5,itemtype5,item6,itemtype6,item7,itemtype7,item8,itemtype8,time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+const updateSticker= `INSERT INTO stickers (stickname,user) VALUES (?,?)`;
 
-app.get("/", (req, res) => res.send("hello it worked"));
 
-const storage = multer.diskStorage({
-  destination: function (req: any, file: any, callback: any) {
-    var dir = "../public/images/posts";
-    callback(null, dir);
-  },
-  filename: function (req: any, file: any, callback: any) {
-    var xx = `super${file.originalname}.png`;
+const updatebillboardPic = `UPDATE members SET billboard1 = ?, billboardthumb1 = ?  WHERE (id = ?)`;
 
-    callback(null, xx);
-  },
-});
+const createpost = `INSERT INTO posts (sender,post_count,topic,caption,item1,thumb1,itemtype1,item2,thumb2,itemtype2,item3,thumb3,itemtype3,item4,thumb4,itemtype4,item5,thumb5,itemtype5,item6,thumb6,itemtype6,item7,thumb7,itemtype7,item8,thumb8,itemtype8,time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 
-var upload = multer({ storage: storage });
+
+
+
+
+
+
 
 app.post(
-  "/upload",
-  upload.array("final", 8),
-  async (req: any, res: any, next: any) => {
-    if (req.files) {
-      ////req.files.length
-      ////console.log(req.body.fiz);
+  "/get_signed_url_4upload_post",
+  async (req: any, res: any) => {
 
-      var currentTime = new Date();
+  const { values } = req.body;
+var holder=[];
+   for (let i = 0; i < values.count; i++) {
+        const urlHD = await generateUploadURL();
+const urlThumb = await generateUploadURL();
+var cc={urlHD :urlHD,urlThumb:urlThumb}
+holder[i]=cc;
+
+if(values.count - 1 === i){
+
+  res.send({holder})
+}    }
+
+});
+
+
+
+
+
+app.post(
+  "/get_signed_url_Sticker",
+  async (req: any, res: any) => {
+const url = await generateUploadURL();
+res.send({url}) });
+
+
+
+app.post("/sticker_upload_data", async (req: Request, res: Response) => {
+  const { values } = req.body;
+  const connection = mysql.createConnection(CONNECTION_CONFIG);
+  const execQuery = util.promisify(connection.query.bind(connection));
+
+  
+  try {
+    await execQuery(updateSticker, [
+      values.imagedata,
+      values.id,
+    ]);
+    return res.send({ message: "sticker image data updated" });
+  } catch {
+    return res.send({ message: "Failed" });
+  }
+});
+
+
+
+
+app.post(
+  "/get_signed_url_4upload",
+  async (req: any, res: any) => {
+const urlHD = await generateUploadURL();
+const urlThumb = await generateUploadURL();
+const url={urlHD:urlHD,urlThumb:urlThumb};
+res.send({url}) });
+
+
+app.put("/profile_upload_data", async (req: Request, res: Response) => {
+  const { values } = req.body;
+  const connection = mysql.createConnection(CONNECTION_CONFIG);
+  const execQuery = util.promisify(connection.query.bind(connection));
+
+  
+  try {
+    await execQuery(updateProfilePic, [
+      values.imagedata,
+      values.imagedataThumb,
+       values.color,
+        values.color2,
+         0,
+      values.id,
+    ]);
+    return res.send({ message: "profile image data updated" });
+  } catch {
+    return res.send({ message: "Failed" });
+  }
+});
+
+
+
+
+app.put(
+  "/billboard_upload_data",
+  async (req: any, res: any, next: any) => {
+  const { values } = req.body;
+      const connection = mysql.createConnection(CONNECTION_CONFIG);
+      const execQuery = util.promisify(connection.query.bind(connection));
+      try {
+        await execQuery(updatebillboardPic, [  values.imagedata,
+      values.imagedataThumb,
+      values.id,]);
+        return res.send({
+          message: "billboard image uploaded",
+        });
+      } catch {
+        return res.send({ message: "images upload failed" });
+      }
+  }
+);
+
+
+app.post(
+  "/post_upload_data",
+  async (req: any, res: any, next: any) => {
+  const { values } = req.body;
+
+   var currentTime = new Date();
       const connection = mysql.createConnection(CONNECTION_CONFIG);
       const execQuery = util.promisify(connection.query.bind(connection));
       try {
         await execQuery(createpost, [
-          req.body.id,
-          req.files.length,
-          req.body.topic,
-          req.body.caption,
-          req.files[0] ? req.files[0].filename : null,
-          req.files[0] ? 1 : null,
-          req.files[1] ? req.files[1].filename : null,
-          req.files[1] ? 1 : null,
-          req.files[2] ? req.files[2].filename : null,
-          req.files[2] ? 1 : null,
-          req.files[3] ? req.files[3].filename : null,
-          req.files[3] ? 1 : null,
-          req.files[4] ? req.files[4].filename : null,
-          req.files[4] ? 1 : null,
-          req.files[5] ? req.files[5].filename : null,
-          req.files[5] ? 1 : null,
-          req.files[6] ? req.files[6].filename : null,
-          req.files[6] ? 1 : null,
-          req.files[7] ? req.files[7].filename : null,
-          req.files[7] ? 1 : null,
+          values.id,
+          values.all.length,
+           values.topic,
+           values.caption,
+          values.all[0] ? values.all[0].imagedata : null,
+            values.all[0] ? values.all[0].imagedataThumb : null,
+          values.all[0] ? 1 : null,
+         values.all[1] ? values.all[1].imagedata : null,
+            values.all[1] ? values.all[1].imagedataThumb : null,
+         values.all[1] ? 1 : null,
+         values.all[2] ? values.all[2].imagedata : null,
+            values.all[2] ? values.all[2].imagedataThumb : null,
+         values.all[2] ? 1 : null,
+         values.all[3] ? values.all[3].imagedata : null,
+            values.all[3] ? values.all[3].imagedataThumb : null,
+        values.all[3] ? 1 : null,
+         values.all[4] ? values.all[4].imagedata : null,
+            values.all[4] ? values.all[4].imagedataThumb : null,
+         values.all[4] ? 1 : null,
+        values.all[5]  ? values.all[5].imagedata : null,
+           values.all[5] ? values.all[5].imagedataThumb : null,
+         values.all[5] ? 1 : null,
+        values.all[6] ? values.all[6].imagedata : null,
+           values.all[6] ? values.all[6].imagedataThumb : null,
+        values.all[6] ? 1 : null,
+         values.all[7] ? values.all[7].imagedata : null,
+            values.all[7] ? values.all[7].imagedataThumb : null,
+         values.all[7] ? 1 : null,
           currentTime,
         ]);
         return res.send({ message: "images uploaded" });
       } catch {
         return res.send({ message: "images upload failed" });
       }
-    } else {
-      return res.send({ message: "no images found" });
-    }
   }
 );
 
-const storageProfile = multer.diskStorage({
-  destination: function (req: any, file: any, callback: any) {
-    var dir = "../public/images/profile";
-    callback(null, dir);
-  },
-  filename: function (req: any, file: any, callback: any) {
-    var xx = `superProfile${file.originalname}.png`;
 
-    callback(null, xx);
-  },
-});
 
-var uploadprofile = multer({ storage: storageProfile });
 
-app.post(
-  "/profile_upload",
-  uploadprofile.array("finalxx", 1),
-  async (req: any, res: any, next: any) => {
-    if (req.files) {
-      ////req.files.length
-      ////console.log(req.body.fiz);
-
-      const connection = mysql.createConnection(CONNECTION_CONFIG);
-      const execQuery = util.promisify(connection.query.bind(connection));
-      try {
-        await execQuery(updateProfilePic, [req.files[0].filename, req.body.id]);
-        return res.send({ message: "profile image uploaded" });
-      } catch {
-        return res.send({ message: "images upload failed" });
-      }
-    } else {
-      return res.send({ message: "no images found" });
-    }
-  }
-);
-
-const storagebillboard = multer.diskStorage({
-  destination: function (req: any, file: any, callback: any) {
-    var dir = "../public/images/billboard";
-    callback(null, dir);
-  },
-  filename: function (req: any, file: any, callback: any) {
-    var xx = `superbillboard${file.originalname}.png`;
-
-    callback(null, xx);
-  },
-});
-
-var uploadbillboard = multer({ storage: storagebillboard });
-
-app.post(
-  "/billboard_upload",
-  uploadbillboard.array("finalxxy", 1),
-  async (req: any, res: any, next: any) => {
-    if (req.files) {
-      ////req.files.length
-      ////console.log(req.body.fiz);
-
-      const connection = mysql.createConnection(CONNECTION_CONFIG);
-      const execQuery = util.promisify(connection.query.bind(connection));
-      try {
-        await execQuery(updatebillboardPic, [
-          req.files[0].filename,
-          req.body.id,
-        ]);
-        return res.send({ message: "billboard image uploaded" });
-      } catch {
-        return res.send({ message: "images upload failed" });
-      }
-    } else {
-      return res.send({ message: "no images found" });
-    }
-  }
-);
 
 app.put("/update_basic", async (req: Request, res: Response) => {
   const { values } = req.body;
@@ -264,6 +331,25 @@ app.put("/update_color", async (req: Request, res: Response) => {
     return res.send({ message: "colorFailed" });
   }
 });
+
+
+app.post("/feeds_stickers", async (req: Request, res: Response) => {
+  const connection = mysql.createConnection(CONNECTION_CONFIG);
+  const chronologicalQuery = util.promisify(connection.query.bind(connection));
+  try {
+    const chronologicaldata = await chronologicalQuery(getstickers);
+
+    return res.send({
+      ///gettingcookie: userSessionData,
+      message: "feeds fetched",
+      payload: chronologicaldata,
+    });
+  } catch {
+    return res.send({ message: "error in fetching feeds" });
+  }
+});
+
+
 
 app.post("/feeds_chronological", async (req: Request, res: Response) => {
   const connection = mysql.createConnection(CONNECTION_CONFIG);
@@ -338,6 +424,9 @@ app.post(
   }
 );
 
+
+
+
 app.post(
   "/checkIsLogged",
   validateToken,
@@ -354,6 +443,7 @@ app.post(
           id: logindata[0].id,
           username: logindata[0].username,
           userimage: logindata[0].profile_image,
+           userimagethumb: logindata[0].profile_image_thumb,
           usercolor1: logindata[0].color1,
           usercolor2: logindata[0].color2,
           usercolortype: logindata[0].color_type,
@@ -362,7 +452,9 @@ app.post(
           userquote: logindata[0].quote,
           userreg: logindata[0].reg,
           userbillboard1: logindata[0].billboard1,
+            userbillboardthumb1: logindata[0].billboardthumb1,
           userbillboard2: logindata[0].billboard2,
+             userbillboardthumb2: logindata[0].billboardthumb2,
           biography: logindata[0].biography,
         };
 
@@ -447,25 +539,28 @@ app.post(
           values.inputedPassword,
           DatabasePassword
         );
+        
         if (!PasswordMatchResult) {
           return res.send({ message: "Wrong Password" });
         } else {
-          const payloadValue = {
-            id: logindata[0].id,
-            username: logindata[0].username,
-            userimage: logindata[0].profile_image,
-            usercolor1: logindata[0].color1,
-            usercolor2: logindata[0].color2,
-            usercolortype: logindata[0].color_type,
-            userfirstname: logindata[0].first_name,
-            usersurname: logindata[0].sur_name,
-            userquote: logindata[0].quote,
-            userreg: logindata[0].reg,
-            userbillboard1: logindata[0].billboard1,
-            userbillboard2: logindata[0].billboard2,
-            biography: logindata[0].biography,
-          };
-
+         const payloadValue = {
+          id: logindata[0].id,
+          username: logindata[0].username,
+          userimage: logindata[0].profile_image,
+           userimagethumb: logindata[0].profile_image_thumb,
+          usercolor1: logindata[0].color1,
+          usercolor2: logindata[0].color2,
+          usercolortype: logindata[0].color_type,
+          userfirstname: logindata[0].first_name,
+          usersurname: logindata[0].sur_name,
+          userquote: logindata[0].quote,
+          userreg: logindata[0].reg,
+          userbillboard1: logindata[0].billboard1,
+            userbillboardthumb1: logindata[0].billboardthumb1,
+          userbillboard2: logindata[0].billboard2,
+             userbillboardthumb2: logindata[0].billboardthumb2,
+          biography: logindata[0].biography,
+        };
           const days30inseconds = 60 * 60 * 24 * 30 * 1000;
           const CurrentTimePlusSecs = new Date(
             new Date().getTime() + 60 * 60 * 24 * 30 * 1000
@@ -492,6 +587,14 @@ app.post(
   }
 );
 
+
+function getRandomInt(min:number, max:number) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+var colorHolder=["#32a852","#32a0a8","#6f32a8","#a83265","#a4a832"];
+
 app.post(
   "/registration",
   body("values.inputedEmail")
@@ -513,7 +616,12 @@ app.post(
       });
     } else {
       const { values } = req.body;
-      const color: string = "#cccccc";
+
+
+      
+       var  colorans=getRandomInt(0,4);
+
+var color =colorHolder[colorans];
       var currentTime = new Date();
       const connection = mysql.createConnection(CONNECTION_CONFIG);
       const execQuery = util.promisify(connection.query.bind(connection));
@@ -523,8 +631,10 @@ app.post(
             values.inputedUsername,
             hash,
             values.inputedEmail,
-            "bill.png",
-            "z.png",
+            "https://superstarz-data-tank.s3.eu-west-2.amazonaws.com/fc284f4924c7405bb44ab8e2c3f05891",
+            "https://superstarz-data-tank.s3.eu-west-2.amazonaws.com/94e85f77e13ff88e7deb98d65975f39a",
+            "https://superstarz-data-tank.s3.eu-west-2.amazonaws.com/98356ee74f016f6e019ec687d3a54982",
+            "https://superstarz-data-tank.s3.eu-west-2.amazonaws.com/2c38be850a49ff355ba1e13a40ebe3f0",
             color,
             color,
             0,
@@ -536,17 +646,22 @@ app.post(
           ]);
           //console.log("success");
 
+
+
+
           const payloadValue = {
             id: signupData.insertId,
             username: values.inputedUsername,
-            userimage: "z.png",
+            userimage: "https://superstarz-data-tank.s3.eu-west-2.amazonaws.com/98356ee74f016f6e019ec687d3a54982",
+            userimagethumb: "https://superstarz-data-tank.s3.eu-west-2.amazonaws.com/2c38be850a49ff355ba1e13a40ebe3f0",
             usercolor1: color,
             usercolor2: color,
             usercolortype: 0,
             userfirstname: "",
             usersurname: "",
             userquote: " ",
-            userbillboard1: "bill.png",
+            userbillboard1: "https://superstarz-data-tank.s3.eu-west-2.amazonaws.com/fc284f4924c7405bb44ab8e2c3f05891",
+             userbillboardthumb1: "https://superstarz-data-tank.s3.eu-west-2.amazonaws.com/94e85f77e13ff88e7deb98d65975f39a",
             userbillboard2: "",
             biography: "",
           };
@@ -582,6 +697,18 @@ app.post(
   }
 );
 
-app.listen(1000, (): any => {
-  console.log("running");
+
+
+
+if (process.env.APP_STATE === "prod") {
+  var staticServe = express.static(path.join(__dirname, "../../", "build"));
+  app.use("/", staticServe);
+
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname, "../../", "build", "index.html"))
+  );
+}
+
+app.listen(process.env.LISTEN, (): any => {
+ console.log("runnning");
 });

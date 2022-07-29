@@ -121,9 +121,9 @@ function PreviewCanvasCropAllx({
         }
         var quality;
         type == 1
-          ? (quality = 800)
+          ? (quality = 1024)
           : type == 2
-          ? (quality = 700)
+          ? (quality =750)
           : (quality = matchMobile ? 150 : 300);
 
         if (cropW > cropH) {
@@ -458,20 +458,39 @@ function PreviewCanvasCropAllx({
 
   return (
     <>
-      <Grid container>
-        <Grid xs={8} item>
+
+    {type === 1 ?  <>
+
+{ length === 1 ? <> <Grid xs={12} item>
           <img
             ref={addUploadItemsRef}
             style={{
-              width: length === 1 ? "auto" : "100%",
-              height: length === 1 ? "50%" : "auto",
+              width:  "auto",
+              height:  WideImageCheck? "70%" : "50%",
               position: "relative",
               margin: "auto",
               display: callLayoutoNCE ? "none" : "block",
             }}
           />
-        </Grid>
-      </Grid>
+        </Grid></>  : 
+        <> 
+      
+          <img
+            ref={addUploadItemsRef}
+            style={{
+              width: "100%",
+              height:  "auto",
+              position: "relative",
+              margin: "auto",
+              display: callLayoutoNCE ? "none" : "block",
+            }}
+          />
+          </> 
+       }
+
+       
+      </>: null}
+     
 
       <Grid
         container
@@ -489,15 +508,8 @@ function PreviewCanvasCropAllx({
           style={{ width: "100vw", padding: "0px", height: "100vh" }}
         ></Grid>
 
-        <img
-          ref={addUploadItemsRefThumb}
-          style={{
-            width: "100%",
-            height: "auto",
-            margin: "auto",
-          }}
-        />
-
+        
+ {type === 2 ? 
         <img
           ref={addUploadItemsRefSD}
           style={{
@@ -505,7 +517,18 @@ function PreviewCanvasCropAllx({
             height: "auto",
             margin: "auto",
           }}
-        />
+        />: null}
+        
+  {type === 3 ?   <img
+          ref={addUploadItemsRefThumb}
+          style={{
+            width: "100%",
+            height: "auto",
+            margin: "auto",
+          }}
+        />: null}
+      
+
 
         {allowCropAllCanvas ? (
           <canvas

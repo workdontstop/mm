@@ -51,11 +51,18 @@ function ImageFilterinnerx({
   superzeroeffect,
   finalImageData,
   setfinalImageData,
+    finalImageDataSD,
+  setfinalImageDataSD,
+    finalImageDataBASE64,
+  setfinalImageDataBASE64,
   setstartTopicCap,
   itemUploadRefSD,
   setsupeFilterLoadFade,
 }: any): JSX.Element {
   const finalImageDataxx = [...finalImageData];
+    const finalImageDataxxSD = [...finalImageDataSD];
+      const finalImageDataxxBASE64 = [...finalImageDataBASE64];
+
   const effectModexx = [...effectMode];
   const regimageholdfilterxx = [...regimageholdfilter];
   const trapfiltersxx = [...trapfilters];
@@ -233,7 +240,7 @@ function ImageFilterinnerx({
         height / 2,
         width * 0.66
       );
-    } else if (type === "futurama" || type === "kemi") {
+    } else if (type === "futurama" || type === "zoidberg") {
       var gradient = ctx.createLinearGradient(
         width / 73.6,
         height / 33.4,
@@ -268,7 +275,7 @@ function ImageFilterinnerx({
       gradient.addColorStop(0.5, "#5c384c");
       gradient.addColorStop(0.75, "#3e452f");
       gradient.addColorStop(1, " #2e3c3f");
-    } else if (type === "kemi") {
+    } else if (type === "zoidberg") {
       gradient.addColorStop(0, "#244a82");
       gradient.addColorStop(1, "#4d3017");
     } else if (type === "tentacion") {
@@ -276,8 +283,8 @@ function ImageFilterinnerx({
       gradient.addColorStop(0.6, "#3a2922");
       gradient.addColorStop(1, "#3b355d");
     } else if (type === "vintage") {
-      gradient.addColorStop(0, "#353a49");
-      gradient.addColorStop(1, "#3d4253");
+      gradient.addColorStop(0, "#2f3340");
+      gradient.addColorStop(1, "#3d4358");
     } else if (type === "floyd") {
       gradient.addColorStop(0, "#3b3939");
       gradient.addColorStop(1, "#191d1b");
@@ -290,6 +297,17 @@ function ImageFilterinnerx({
 
     return ctx;
   }
+
+
+   function blobToBase64(blob: any) {
+    return new Promise((resolve, _) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  }
+
+
 
   ///
   ///
@@ -419,12 +437,12 @@ function ImageFilterinnerx({
           //////////////////CSS EDIT IMAGE WITH CTX.FILTER
           if (type === "lift") {
             ctx.filter =
-              "contrast(1.25) brightness(0.98) blur(0px) saturate(120%)";
+              "contrast(1.25) brightness(0.98) blur(0px) saturate(125%)";
           } else if (type === "floyd") {
-            ctx.filter = "contrast(1.2) brightness(0.99) saturate(111%)";
+           ctx.filter = "contrast(1.1) brightness(1) saturate(116%)";
           } else if (type === "jentle") {
             ctx.filter =
-              "contrast(0.82) brightness(0.83) hue-rotate(20deg) saturate(110%) ";
+              "contrast(0.82) brightness(0.84) hue-rotate(20deg) saturate(110%) ";
           } else if (type === "mint") {
             ctx.filter = "contrast(1.28) brightness(0.99)  saturate(95%)  ";
           } else if (type === "nebula") {
@@ -432,18 +450,18 @@ function ImageFilterinnerx({
           } else if (type === "juice") {
             if (method === "thumb" && matchMobile) {
               ctx.filter =
-                "contrast(1.16) brightness(0.99) saturate(180%) blur(0px)";
+                "contrast(1.17) brightness(0.99) saturate(185%) blur(0px)";
             } else {
               ctx.filter =
-                "contrast(1.16) brightness(0.99) saturate(180%) blur(0.6px)";
+                "contrast(1.17) brightness(0.99) saturate(185%) blur(0.4px)";
             }
           } else if (type === "futurama") {
-            ctx.filter = "contrast(1.3) brightness(0.95) saturate(140%) ";
-          } else if (type === "kemi") {
+            ctx.filter = "contrast(1.45) brightness(0.95) saturate(145%) ";
+          } else if (type === "zoidberg") {
             ctx.filter =
               "contrast(1.4) brightness(0.97) saturate(107%)  hue-rotate(1.4deg)";
           } else if (type === "tentacion") {
-            ctx.filter = "contrast(1.32) brightness(0.96) saturate(137%)";
+            ctx.filter = "contrast(1.2) brightness(1.1) saturate(137%)";
           } else if (type === "moonshine") {
             if (method === "thumb" && matchMobile) {
               ctx.filter =
@@ -457,8 +475,9 @@ function ImageFilterinnerx({
                   "contrast(1.3) brightness(0.99) saturate(50%) blur(2.8px)";
               }
             }
+
           } else if (type === "vintage") {
-            ctx.filter = " contrast(1.1)  brightness(0.88)  saturate(12%)";
+            ctx.filter = " contrast(1.1)  brightness(0.82)  saturate(20%)";
           } else {
           }
           //////////////////CSS EDIT IMAGE WITH CTX.FILTER
@@ -614,8 +633,8 @@ function ImageFilterinnerx({
 
           //////////////////////GRADIENT BRIGHTNESS
 
-          if (type === "lift" || type === "jentle" || type === "tentacion") {
-            var gradient = ctx.createRadialGradient(
+
+          if(type === "normal"){}else{ var gradient = ctx.createRadialGradient(
               w / 2,
               h / 2,
               0,
@@ -630,14 +649,25 @@ function ImageFilterinnerx({
               gradient.addColorStop(0, "#c9d6df11");
               gradient.addColorStop(1, "#bef0ce13");
             } else if (type === "jentle") {
-              gradient.addColorStop(0, "rgba(255, 255, 255,0.008)");
-              gradient.addColorStop(1, "rgba(255, 255, 255,0.008)");
-            } else {
+              gradient.addColorStop(0, "rgba(255, 255, 255,0.01)");
+              gradient.addColorStop(1, "rgba(255, 255, 255,0.01)");
+            } else if (type === "vintage") {
+              gradient.addColorStop(0, "rgba(255, 255, 255,0.015)");
+              gradient.addColorStop(1, "rgba(255, 255, 255,0.015)");
+            }
+             else if (type === "zoidberg" || type === "futurama" || type === "floyd" || type === "mint") {
+               gradient.addColorStop(0, "rgba(255, 255, 255,0.03)");
+              gradient.addColorStop(1, "rgba(255, 255, 255,0.015)");
+            }else {
+                gradient.addColorStop(0, "rgba(255, 255, 255,0.14)");
+              gradient.addColorStop(1, "rgba(255, 255, 255,0.07)");
             }
 
             ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-          }
+            ctx.fillRect(0, 0, width, height);}
+        
+           
+          
 
           //////////////////////GRADIENT BRIGHTNESS
 
@@ -717,14 +747,14 @@ function ImageFilterinnerx({
           } else if (type === "futurama") {
             ////////////composition
             ctx.globalCompositeOperation = "overlay";
-            ctx.fillStyle = "#11181f1f";
+            ctx.fillStyle = "#3950681f";
             ctx.fillRect(0, 0, width, height);
             ctx.globalCompositeOperation = "screen";
-            ctx.fillStyle = "#11181f1f";
+            ctx.fillStyle = "#42806c1f";
             ctx.fillRect(0, 0, width, height);
 
             ////////////composition
-          } else if (type === "kemi") {
+          } else if (type === "zoidberg") {
             ////////////composition
             ctx.globalCompositeOperation = "screen";
             ctx.fillStyle = "#69758113";
@@ -748,10 +778,10 @@ function ImageFilterinnerx({
             ////////////composition
 
             ctx.globalCompositeOperation = "soft-light";
-            ctx.fillStyle = "#40404b4e";
+            ctx.fillStyle = "#8888b14e";
             ctx.fillRect(0, 0, width, height);
             ctx.globalCompositeOperation = "soft-light";
-            ctx.fillStyle = "#2c2c3a4e";
+            ctx.fillStyle = "#5c83944e";
             ctx.fillRect(0, 0, width, height);
             ////////////composition
           } else {
@@ -765,7 +795,7 @@ function ImageFilterinnerx({
             type === "nebula" ||
             type === "juice" ||
             type === "futurama" ||
-            type === "kemi" ||
+            type === "zoidberg" ||
             type === "tentacion" ||
             type === "moonshine" ||
             type === "vintage" ||
@@ -799,9 +829,26 @@ function ImageFilterinnerx({
               Ref.current[index].src = data;
 
               if (method === "imageHDall") {
-                const res = await fetch(data);
-                const datax = await res.blob();
+               
+
+                
+
+                 var data = canvasRef.current.toDataURL("image/jpeg", 1.0);
+                   var datathumb = canvasRef.current.toDataURL("image/jpeg", 0.05);
+
+
+                  const res = await fetch(data);
+                  const datax = await res.blob();
+
+                   const resdatathumb = await fetch(datathumb);
+                  const datathumbx = await resdatathumb.blob();
+
+                   var base64String = await blobToBase64(datax);
+
+                  
                 finalImageDataxx[index] = datax;
+                 finalImageDataxxSD[index] = datathumbx;
+                  finalImageDataxxBASE64[index] = base64String;
               }
 
               regimageholdfilterxx[index] = data;
@@ -824,6 +871,9 @@ function ImageFilterinnerx({
                   setblink(false);
                   if (method === "imageHDall") {
                     setfinalImageData(finalImageDataxx);
+                       setfinalImageDataSD(finalImageDataxxSD);
+                          setfinalImageDataBASE64(finalImageDataxxBASE64);
+
                     setsupeFilterLoadFade(false);
                     setstartTopicCap(true);
                   }
@@ -912,7 +962,7 @@ function ImageFilterinnerx({
           "sd"
         );
       } else if (index2 === 2) {
-        ApplyImageFilter("kemi", 0, index2 + 1, imageFiltersRef, "thumb", "sd");
+        ApplyImageFilter("zoidberg", 0, index2 + 1, imageFiltersRef, "thumb", "sd");
       } else if (index2 === 3) {
         ApplyImageFilter(
           "futurama",
@@ -1042,6 +1092,7 @@ function ImageFilterinnerx({
       ApplyImageFilter(effectMode[0], 0, 0, getImageWidth, "imageHDall", "hd");
     } else {
       clickOptions(i, optionsClickType, "filter");
+      
       if (Timer.current) {
         clearTimeout(Timer.current);
       }
@@ -1265,9 +1316,9 @@ function ImageFilterinnerx({
                           fontWeight: "bolder",
                           visibility: ActiveSlide === i ? "visible" : "hidden",
                           filter: darkmodeReducer
-                            ? "drop-shadow(1.2px 0.1px 1.92px rgba(255, 255, 255, 0.4))"
+                            ? "drop-shadow(1.2px 0.1px 1.92px rgba(255, 255, 255, 0.6))"
                             : "drop-shadow(1.2px 0.1px 1.92px rgba(41, 53, 70, 8.35))",
-                          color: darkmodeReducer ? "#dddddd" : "#000000",
+                          color: darkmodeReducer ? "#eeeeee" : "#000000",
                         }}
                       >
                         {" "}
@@ -1283,7 +1334,7 @@ function ImageFilterinnerx({
                               startImageFilter(i);
                             }}
                             style={{
-                              cursor: ActiveSlide === i ? "pointer" : "alias",
+                              cursor: ActiveSlide === i ? "pointer" : "copy",
                               width: `${getSliderWidthNew + addedwidth - 5}px`,
                               height: `${getSliderWidthNew + addedwidth - 5}px`,
                               backgroundColor: darkmodeReducer

@@ -6,7 +6,17 @@ function SliderNumberx({
   total,
   pey,
   itemCLICKED,
+  stopSlider,
+  ActiveAutoPlay,
+  startSlider
 }: any): JSX.Element {
+
+
+
+  const startplay=()=>{
+if(ActiveAutoPlay[pey]){  startSlider(0) }else{  stopSlider(0)}
+  
+  }
   ///
   ///
   ///
@@ -27,14 +37,19 @@ function SliderNumberx({
       {itemCLICKED[pey] || total === 1 ? null : (
         <>
           {" "}
-          <div
+          <div  onClick={startplay}
             style={{
               position: "absolute",
-              zIndex: 3,
+              zIndex: 30,
               left: 25,
+              cursor:"pointer",
               top: "3vh",
               fontFamily: "Arial, Helvetica, sans-serif",
               fontWeight: "bolder",
+              opacity:"0.6",
+               height:"0px",
+               padding:"0px"
+               
             }}
           >
             <span
@@ -50,6 +65,7 @@ function SliderNumberx({
                 borderRadius: "50%",
                 fontSize: "0.92vw",
                 color: darkmodeReducer ? "#ffffff" : "#000000",
+               
               }}
             >
               {total}
@@ -58,21 +74,27 @@ function SliderNumberx({
         </>
       )}
 
+
       {itemCLICKED[pey] ? (
         total === 1 ? null : (
           <>
             {" "}
-            <div
-              style={{
+            <div 
+              style={{    cursor:"pointer",
                 position: "absolute",
-                zIndex: 3,
+                zIndex: 30,
                 right: 21,
+                height:"0px",
+               
                 top: "3vh",
                 fontFamily: "Arial, Helvetica, sans-serif",
                 fontWeight: "bolder",
+                opacity:"0.8",
+                padding:"0px"
               }}
             >
               <span
+            
                 className={darkmodeReducer ? "turdark" : "turlight"}
                 style={{
                   padding: "7px",

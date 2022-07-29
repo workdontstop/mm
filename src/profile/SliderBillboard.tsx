@@ -7,11 +7,23 @@ import { useSelector } from "react-redux";
 import { DotsBillboard } from "./DotsBillboard";
 
 function SliderBillboardx({
+  slidesthumb,
   slides,
   billboardDynamicHeight,
   ClickBillboardClose,
   ShowBillboard,
+  billboardserverswitch,
 }: any): JSX.Element {
+  const { REACT_APP_APPX_STATE } = process.env;
+
+  var allow4dev = "";
+
+  if (REACT_APP_APPX_STATE === "dev") {
+    allow4dev = "http://localhost:1000";
+  } else {
+    allow4dev = "";
+  }
+
   const [sliderIndex, setSliderIndex] = useState(0);
 
   const [allowAutoPlay, setAllowAutoPlay] = useState(true);
@@ -300,36 +312,14 @@ function SliderBillboardx({
       />
       {transitions((style, i) => (
         <Grid key={i} xs={12} item>
-          <animated.img
-            ref={SlideimageRefthumb}
-            onLoad={() => {
-              sliderFirstImageOnLoadthumb(i);
-            }}
-            className={
-              darkmodeReducer ? "turdarkbillboard" : "turlightbillboard"
-            }
-            style={{
-              ...style,
-              width: "100%",
-              objectFit: "cover",
-              position: "absolute",
-              height: billboardDynamicHeight,
-              borderRadius: "0px",
-              borderBottomLeftRadius: matchPc ? "7px" : "0em",
-              borderBottomRightRadius: matchPc ? "7px" : "0em",
-              filter: "blur(3px)",
-              left: "0",
-              zIndex: 1,
-            }}
-            src={`./images/billboardthumb/${slides[i]}`}
-          />
-
-          <animated.img
+            <animated.img
             ref={SlideimageRef}
             onClick={ClickBillboardCloseStart}
             onLoad={() => {
               sliderFirstImageOnLoad(i);
             }}
+
+            
             style={{
               ...style,
               cursor: "pointer",
@@ -350,8 +340,40 @@ function SliderBillboardx({
                 : "0px",
               left: "0",
               zIndex: 2,
+               filter: "blur(4.5px)"
             }}
-            src={`./images/billboard/${slides[i]}`}
+            src={slidesthumb[i]}
+          />
+                <animated.img
+            ref={SlideimageRef}
+            onClick={ClickBillboardCloseStart}
+            onLoad={() => {
+              sliderFirstImageOnLoad(i);
+            }}
+
+            
+            style={{
+              ...style,
+              cursor: "pointer",
+              width: "100%",
+              objectFit: "cover",
+              position: "relative",
+              height: billboardDynamicHeight,
+              borderRadius: "0px",
+              borderBottomLeftRadius: ShowBillboard
+                ? "0px"
+                : matchPc
+                ? "7px"
+                : "0px",
+              borderBottomRightRadius: ShowBillboard
+                ? "0px"
+                : matchPc
+                ? "7px"
+                : "0px",
+              left: "0",
+              zIndex: 2,
+            }}
+            src={slides[i]}
           />
         </Grid>
       ))}{" "}

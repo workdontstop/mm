@@ -19,3 +19,5 @@ export const CHANGE_NAV = "CHANGE_NAV";
 export const CHANGE_NAV_FILTER = "CHANGE_NAV_FILTER";
 
 export const CHANGE_NAV_CROP = "CHANGE_NAV_CROP";
+
+export const UPDATE_SNAP = "UPDATE_SNAP";

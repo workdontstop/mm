@@ -11,7 +11,12 @@ import { usePalette } from "react-palette";
 import { UpdateColorAction } from ".././GlobalActions";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
-function Billboardx({ OpenModalForm, click, billboardx }: any): JSX.Element {
+function Billboardx({
+  OpenModalForm,
+  click,
+  billboardx,
+  billboardserverswitch,
+}: any): JSX.Element {
   ///
   ///
   ///
@@ -29,9 +34,11 @@ function Billboardx({ OpenModalForm, click, billboardx }: any): JSX.Element {
       quote: string;
       billboard1: string;
       billboard2: string;
+        billboardthumb1: string;
+      billboardthumb2: string;
     };
   }
-  const { image, username, quote, billboard1, billboard2 } = useSelector(
+  const { image, username, quote, billboard1, billboard2 ,billboardthumb1, billboardthumb2} = useSelector(
     (state: RootStateReducerImage) => ({
       ...state.UserdataReducer,
     })
@@ -41,8 +48,12 @@ function Billboardx({ OpenModalForm, click, billboardx }: any): JSX.Element {
   const quoteReducer = quote;
   const billboard1Reducer = billboard1;
   const billboard2Reducer = billboard2;
+    const billboardthumb1Reducer = billboardthumb1;
+  const billboardthumb2Reducer = billboardthumb2;
+
 
   const billboardImages = [billboard1Reducer, billboard2Reducer];
+    const billboardthumbImages = [billboardthumb1Reducer, billboardthumb2Reducer];
 
   const [ShowBillboard, setShowBillboard] = useState<boolean>(false);
 
@@ -168,7 +179,7 @@ function Billboardx({ OpenModalForm, click, billboardx }: any): JSX.Element {
               onClick={ClickBillboard}
               style={{
                 visibility: ShowBillboard ? "hidden" : "visible",
-                cursor: "alias",
+                cursor: "copy",
                 zIndex: 2,
                 position: "relative",
                 height: billboardDynamicHeight,
@@ -444,9 +455,11 @@ function Billboardx({ OpenModalForm, click, billboardx }: any): JSX.Element {
               {/*///////////////////////////////////////////////////////////////////////////BILLBOARD IMAGE*/}
 
               <SliderBillboard
+                billboardserverswitch={billboardserverswitch}
                 ClickBillboardClose={ClickBillboardClose}
                 ShowBillboard={ShowBillboard}
                 slides={billboardImages}
+                 slidesthumb={billboardthumbImages}
                 billboardDynamicHeight={billboardDynamicHeight}
               />
 

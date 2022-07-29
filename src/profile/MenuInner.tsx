@@ -203,7 +203,7 @@ function MenuInnerx({
                                 clickOptions(i, optionsClickType, "upload");
                               }}
                               style={{
-                                cursor: ActiveSlide === i ? "pointer" : "alias",
+                                cursor: ActiveSlide === i ? "pointer" : "copy",
                                 width: `${getSliderWidthNew}px`,
                                 height: `${getSliderWidthNew}px`,
                                 backgroundColor: darkmodeReducer
@@ -250,7 +250,7 @@ function MenuInnerx({
                                 clickOptions(i, optionsClickType, "upload");
                               }}
                               style={{
-                                cursor: ActiveSlide === i ? "pointer" : "alias",
+                                cursor: ActiveSlide === i ? "pointer" : "copy",
                                 width: `${getSliderWidthNew}px`,
                                 height: `${getSliderWidthNew}px`,
                                 backgroundColor: darkmodeReducer
@@ -302,7 +302,7 @@ function MenuInnerx({
                           clickOptions(i, optionsClickType, " ");
                         }}
                         style={{
-                          cursor: ActiveSlide === i ? "pointer" : "alias",
+                          cursor: ActiveSlide === i ? "pointer" : "copy",
                           width: `${getSliderWidthNew}px`,
                           height: `${getSliderWidthNew}px`,
                           borderRadius: "50%",
